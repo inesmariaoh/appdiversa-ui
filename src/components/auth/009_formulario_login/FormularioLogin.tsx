@@ -17,7 +17,10 @@ import { CampoContrasena } from '@/components/ui/009_campo_contrasena';
 import { useAuthStore } from '@/store/authStore';
 import { useSesionStore } from '@/store/sesionStore';
 import { vincularUsuarioSesion } from '@/services/sesionesServicio';
-import { RUTA_HISTORIAL_RESPUESTAS } from '@/utils/destinoPostAuth';
+import {
+  RUTA_HISTORIAL_RESPUESTAS,
+  destinoPorDefectoSegunRol,
+} from '@/utils/destinoPostAuth';
 import { extraerDetalleError } from '@/utils/erroresApi';
 
 const esquemaLogin = z.object({
@@ -30,7 +33,7 @@ type DatosLogin = z.infer<typeof esquemaLogin>;
 export function FormularioLogin() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const destino = searchParams.get('destino') ?? '/admin/formularios';
+  const destinoParam = searchParams.get('destino');
   const uuidSesionParam = searchParams.get('uuid_sesion');
   const tokenClienteParam = searchParams.get('token_cliente');
   const uuidFormularioParam = searchParams.get('uuid_formulario');
@@ -54,6 +57,9 @@ export function FormularioLogin() {
     limpiarError();
     try {
       await iniciarSesion({ username: datos.identificador, password: datos.contrasena });
+
+      const esAdministrador = useAuthStore.getState().esAdministrador();
+      const destino = destinoParam ?? destinoPorDefectoSegunRol(esAdministrador);
 
       const uuidSesion = uuidSesionParam ?? useSesionStore.getState().uuidSesion;
       const tokenCliente =
@@ -135,7 +141,7 @@ export function FormularioLogin() {
         type="submit"
         disabled={cargando}
         aria-busy={cargando}
-        className="w-full py-3 px-4 rounded-lg text-sm font-semibold transition-opacity"
+        className="w-full min-h-[52px] py-4 px-6 rounded-lg text-sm font-semibold transition-opacity inline-flex items-center justify-center"
         style={{
           backgroundColor: 'var(--color-primario)',
           color: '#ffffff',

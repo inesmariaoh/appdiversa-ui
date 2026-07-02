@@ -3,8 +3,13 @@
  */
 
 export const RUTA_HISTORIAL_RESPUESTAS = '/mis-respuestas';
+export const RUTA_PANEL_ADMIN = '/admin/formularios';
 
 const PATRON_RUTA_RESUMEN = /\/encuestas\/[^/]+\/resumen\/?$/;
+
+export function destinoPorDefectoSegunRol(esAdministrador: boolean): string {
+  return esAdministrador ? RUTA_PANEL_ADMIN : RUTA_HISTORIAL_RESPUESTAS;
+}
 
 export function esRutaResumenFormulario(ruta: string): boolean {
   return PATRON_RUTA_RESUMEN.test(ruta.trim());

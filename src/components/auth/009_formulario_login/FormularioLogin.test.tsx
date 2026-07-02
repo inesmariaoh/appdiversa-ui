@@ -6,20 +6,23 @@ import { FormularioLogin } from './FormularioLogin';
 const replaceMock = vi.fn();
 const iniciarSesionMock = vi.fn();
 const limpiarErrorMock = vi.fn();
+const esAdministradorMock = vi.fn(() => false);
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: replaceMock }),
   useSearchParams: () => new URLSearchParams(),
 }));
 
-vi.mock('@/store/authStore', () => ({
-  useAuthStore: (selector: (state: unknown) => unknown) =>
+vi.mock('@/store/authStore', () => {
+  const useAuthStore = (selector: (state: unknown) => unknown) =>
     selector({
       iniciarSesion: iniciarSesionMock,
       cargando: false,
       limpiarError: limpiarErrorMock,
-    }),
-}));
+    });
+  useAuthStore.getState = () => ({ esAdministrador: esAdministradorMock });
+  return { useAuthStore };
+});
 
 vi.mock('@/store/sesionStore', () => ({
   useSesionStore: {
@@ -31,11 +34,22 @@ vi.mock('@/services/sesionesServicio', () => ({
   vincularUsuarioSesion: vi.fn(),
 }));
 
+async function iniciarSesionValida(usuario: ReturnType<typeof userEvent.setup>) {
+  await usuario.type(
+    screen.getByLabelText(/correo electrónico o número de celular/i),
+    'usuario@correo.com',
+  );
+  await usuario.type(screen.getByLabelText(/^contraseña$/i), 'Secreta123');
+  await usuario.click(screen.getByRole('button', { name: /inicia sesión/i }));
+}
+
 describe('FormularioLogin', () => {
   beforeEach(() => {
     iniciarSesionMock.mockReset();
     limpiarErrorMock.mockReset();
     replaceMock.mockReset();
+    esAdministradorMock.mockReset();
+    esAdministradorMock.mockReturnValue(false);
   });
 
   it('muestra textos principales con ortografia correcta', () => {
@@ -62,5 +76,25 @@ describe('FormularioLogin', () => {
 
     expect(await screen.findByText(/la contraseña es obligatoria/i)).toBeInTheDocument();
     expect(iniciarSesionMock).not.toHaveBeenCalled();
+  });
+
+  it('redirige al historial de respuestas cuando el usuario no es administrador', async () => {
+    const usuario = userEvent.setup();
+    esAdministradorMock.mockReturnValue(false);
+    render(<FormularioLogin />);
+
+    await iniciarSesionValida(usuario);
+
+    expect(replaceMock).toHaveBeenCalledWith('/mis-respuestas');
+  });
+
+  it('redirige al panel de administración cuando el usuario es administrador', async () => {
+    const usuario = userEvent.setup();
+    esAdministradorMock.mockReturnValue(true);
+    render(<FormularioLogin />);
+
+    await iniciarSesionValida(usuario);
+
+    expect(replaceMock).toHaveBeenCalledWith('/admin/formularios');
   });
 });
