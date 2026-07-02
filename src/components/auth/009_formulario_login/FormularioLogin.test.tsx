@@ -88,13 +88,13 @@ describe('FormularioLogin', () => {
     expect(replaceMock).toHaveBeenCalledWith('/mis-respuestas');
   });
 
-  it('redirige al panel de administración cuando el usuario es administrador', async () => {
+  it('redirige al historial de respuestas tambien cuando el usuario es administrador', async () => {
     const usuario = userEvent.setup();
     esAdministradorMock.mockReturnValue(true);
     render(<FormularioLogin />);
 
     await iniciarSesionValida(usuario);
 
-    expect(replaceMock).toHaveBeenCalledWith('/admin/formularios');
+    expect(replaceMock).toHaveBeenCalledWith('/mis-respuestas');
   });
 });

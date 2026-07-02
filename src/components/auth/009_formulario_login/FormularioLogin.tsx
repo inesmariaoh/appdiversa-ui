@@ -17,10 +17,7 @@ import { CampoContrasena } from '@/components/ui/009_campo_contrasena';
 import { useAuthStore } from '@/store/authStore';
 import { useSesionStore } from '@/store/sesionStore';
 import { vincularUsuarioSesion } from '@/services/sesionesServicio';
-import {
-  RUTA_HISTORIAL_RESPUESTAS,
-  destinoPorDefectoSegunRol,
-} from '@/utils/destinoPostAuth';
+import { RUTA_HISTORIAL_RESPUESTAS } from '@/utils/destinoPostAuth';
 import { extraerDetalleError } from '@/utils/erroresApi';
 
 const esquemaLogin = z.object({
@@ -58,8 +55,7 @@ export function FormularioLogin() {
     try {
       await iniciarSesion({ username: datos.identificador, password: datos.contrasena });
 
-      const esAdministrador = useAuthStore.getState().esAdministrador();
-      const destino = destinoParam ?? destinoPorDefectoSegunRol(esAdministrador);
+      const destino = destinoParam ?? RUTA_HISTORIAL_RESPUESTAS;
 
       const uuidSesion = uuidSesionParam ?? useSesionStore.getState().uuidSesion;
       const tokenCliente =
