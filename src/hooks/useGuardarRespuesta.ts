@@ -33,6 +33,7 @@ function obtenerUuidLocal(codigoPregunta: string): string {
 
 export function useGuardarRespuesta() {
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const guardadosPendientes = useRef<Map<string, () => Promise<void>>>(new Map());
   const enLinea = useOfflineStore((s) => s.enLinea);
   const establecerOperacionesPendientes = useOfflineStore(
     (s) => s.establecerOperacionesPendientes
@@ -146,6 +147,8 @@ export function useGuardarRespuesta() {
       const codigo = pregunta.codigo;
       const timerPrevio = timers.current.get(codigo);
       if (timerPrevio) clearTimeout(timerPrevio);
+      timers.current.delete(codigo);
+      guardadosPendientes.current.delete(codigo);
 
       const respuestaPrev = useRespuestasStore.getState().obtenerRespuesta(codigo);
       const versionCliente = (respuestaPrev?.versionCliente ?? 0) + 1;
@@ -184,10 +187,14 @@ export function useGuardarRespuesta() {
         fechaCliente,
       });
 
+      const ejecutarGuardado = () =>
+        persistirRespuesta(pregunta, valor, versionCliente, observacionFinal);
+      guardadosPendientes.current.set(codigo, ejecutarGuardado);
+
       const timer = setTimeout(() => {
-        ejecutarSinEspera(
-          persistirRespuesta(pregunta, valor, versionCliente, observacionFinal),
-        );
+        timers.current.delete(codigo);
+        guardadosPendientes.current.delete(codigo);
+        ejecutarSinEspera(ejecutarGuardado());
       }, DEBOUNCE_MS);
 
       timers.current.set(codigo, timer);
@@ -195,5 +202,15 @@ export function useGuardarRespuesta() {
     [enLinea, establecerRespuesta, persistirRespuesta]
   );
 
-  return { programarGuardado, guardarInmediato };
+  const flushGuardadosPendientes = useCallback(async () => {
+    const ejecutores = Array.from(guardadosPendientes.current.values());
+    for (const timer of timers.current.values()) {
+      clearTimeout(timer);
+    }
+    timers.current.clear();
+    guardadosPendientes.current.clear();
+    await Promise.all(ejecutores.map((ejecutar) => ejecutar()));
+  }, []);
+
+  return { programarGuardado, guardarInmediato, flushGuardadosPendientes };
 }

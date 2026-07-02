@@ -34,6 +34,7 @@ import { useRespuestasStore } from '@/store/respuestasStore';
 import { useSesionStore } from '@/store/sesionStore';
 import { useOfflineStore } from '@/store/offlineStore';
 import { useAuthStore } from '@/store/authStore';
+import { useAppTheme } from '@/components/layout/007_app_theme';
 import {
   validarFinalizacion,
   finalizarSesion,
@@ -132,6 +133,8 @@ function VistaFinalizadoPanel({
 }: VistaFinalizadoPanelProps) {
   const { uuidSesion } = useSesionStore.getState();
   const { autenticado } = useAuthStore.getState();
+  const { configuracion } = useAppTheme();
+  const envioExitoso = configuracion.flujo_formulario?.envio_exitoso;
   const tituloEnvio = tituloTextoFormulario(
     estructura,
     'confirmacion_envio',
@@ -149,6 +152,8 @@ function VistaFinalizadoPanel({
         titulo={tituloEnvio}
         subtitulo={subtituloEnvio}
         imagenPortada={estructura.imagen_portada}
+        imagenExito={envioExitoso?.imagen_url}
+        imagenExitoAlt={envioExitoso?.imagen_alt}
         nombreFormulario={estructura.nombre}
         urlOtrasEncuestas="/encuestas"
         urlResumen={urlResumen}
@@ -171,11 +176,10 @@ interface ParametrosFinalizacionPanel {
   readonly enLinea: boolean;
   readonly uuidFormulario: string;
   readonly estructura: FormularioEstructura;
+  readonly flushGuardadosPendientes: () => Promise<void>;
   readonly sincronizarEnSegundoPlano: () => Promise<void>;
   readonly establecerFinalizacionPendiente: (pendiente: boolean, uuid?: string) => void;
   readonly iniciarSesion: () => Promise<void>;
-  readonly mostrarEncuestaGuardada: () => void;
-  readonly router: { push: (url: string) => void };
   readonly acciones: AccionesFinalizacionPanel;
 }
 
@@ -183,11 +187,10 @@ async function ejecutarFinalizacionPanel({
   enLinea,
   uuidFormulario,
   estructura,
+  flushGuardadosPendientes,
   sincronizarEnSegundoPlano,
   establecerFinalizacionPendiente,
   iniciarSesion,
-  mostrarEncuestaGuardada,
-  router,
   acciones,
 }: ParametrosFinalizacionPanel): Promise<void> {
   const {
@@ -203,6 +206,7 @@ async function ejecutarFinalizacionPanel({
   setErrorGlobal(null);
   setPendientes([]);
   try {
+    await flushGuardadosPendientes();
     if (!enLinea) {
       establecerFinalizacionPendiente(true, uuidFormulario);
       setMensajeFinalizacion(
@@ -236,8 +240,6 @@ async function ejecutarFinalizacionPanel({
     const resumenSesion = await obtenerResumenSesion(credenciales);
     setResumen(resumenSesion);
     setFinalizado(true);
-    mostrarEncuestaGuardada();
-    router.push(`/encuestas/${uuidFormulario}/resumen`);
   } catch (err) {
     if (err instanceof ErrorApi && err.estadoHttp === 403) {
       setErrorGlobal('La sesión expiró. Se intentará crear una nueva sesión.');
@@ -440,7 +442,7 @@ function PanelFormularioContenido({
     idioma,
     deshabilitado: modoPreview,
   });
-  const { programarGuardado } = useGuardarRespuesta();
+  const { programarGuardado, flushGuardadosPendientes } = useGuardarRespuesta();
   const establecerFinalizacionPendiente = useOfflineStore(
     (estado) => estado.establecerFinalizacionPendiente,
   );
@@ -663,11 +665,10 @@ function PanelFormularioContenido({
       enLinea,
       uuidFormulario,
       estructura,
+      flushGuardadosPendientes,
       sincronizarEnSegundoPlano,
       establecerFinalizacionPendiente,
       iniciarSesion,
-      mostrarEncuestaGuardada: flujo.mostrarEncuestaGuardada,
-      router,
       acciones: {
         setProcesando,
         setErrorGlobal,

@@ -101,6 +101,38 @@ describe('useGuardarRespuesta', () => {
     expect(guardarRespuesta).toHaveBeenCalled();
   });
 
+  it('flushGuardadosPendientes fuerza el guardado sin esperar el debounce', async () => {
+    const { result } = renderHook(() => useGuardarRespuesta());
+
+    act(() => {
+      result.current.programarGuardado(pregunta, 'Ana');
+    });
+
+    expect(guardarRespuesta).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.flushGuardadosPendientes();
+    });
+
+    expect(guardarRespuesta).toHaveBeenCalledTimes(1);
+  });
+
+  it('flushGuardadosPendientes no reejecuta guardados ya realizados', async () => {
+    const { result } = renderHook(() => useGuardarRespuesta());
+
+    await act(async () => {
+      await result.current.guardarInmediato(pregunta, 'Pedro');
+    });
+
+    vi.mocked(guardarRespuesta).mockClear();
+
+    await act(async () => {
+      await result.current.flushGuardadosPendientes();
+    });
+
+    expect(guardarRespuesta).not.toHaveBeenCalled();
+  });
+
   it('guarda inmediatamente sin debounce', async () => {
     const { result } = renderHook(() => useGuardarRespuesta());
 
