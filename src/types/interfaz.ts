@@ -50,11 +50,17 @@ export interface TextosTerminosInterfaz {
   texto_enlace_politica_datos?: string;
 }
 
+export interface TextosEnvioExitoso {
+  imagen_url: string | null;
+  imagen_alt: string;
+}
+
 export interface FlujoFormularioInterfaz {
   modal_salir: TextosModalSalir;
   modal_sesion: TextosModalSesion;
   modal_guardado: TextosModalGuardado;
   terminos: TextosTerminosInterfaz;
+  envio_exitoso: TextosEnvioExitoso;
 }
 
 export interface ConfiguracionInterfaz {

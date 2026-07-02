@@ -69,4 +69,31 @@ describe('resolverFlujoFormulario', () => {
     );
     expect(flujo.terminos.enlace_terminos).toBe('Ver terminos legales');
   });
+
+  it('usa envio_exitoso por defecto sin imagen', () => {
+    const { flujo } = resolverFlujoFormulario({
+      flujo_formulario: { modal_salir: { titulo: 'x' } },
+    });
+
+    expect(flujo.envio_exitoso.imagen_url).toBeNull();
+    expect(flujo.envio_exitoso.imagen_alt).toBe(
+      FLUJO_FORMULARIO_FALLBACK.envio_exitoso.imagen_alt
+    );
+  });
+
+  it('combina imagen y alt de envio_exitoso desde la API', () => {
+    const { flujo } = resolverFlujoFormulario({
+      flujo_formulario: {
+        envio_exitoso: {
+          imagen_url: 'https://res.cloudinary.com/demo/exito.png',
+          imagen_alt: 'Gracias por participar',
+        },
+      },
+    });
+
+    expect(flujo.envio_exitoso.imagen_url).toBe(
+      'https://res.cloudinary.com/demo/exito.png'
+    );
+    expect(flujo.envio_exitoso.imagen_alt).toBe('Gracias por participar');
+  });
 });

@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'localhost',
       },
+      // Recursos visuales parametrizables alojados en Cloudinary.
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
     ],
   },
 };

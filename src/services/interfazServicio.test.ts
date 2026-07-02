@@ -56,6 +56,10 @@ describe('interfazServicio', () => {
             boton_cerrar: 'Cerrar API',
             enlace_terminos: 'Enlace API',
           },
+          envio_exitoso: {
+            imagen_url: 'https://res.cloudinary.com/demo/exito.png',
+            imagen_alt: 'Encuesta enviada',
+          },
         },
       },
     });
@@ -67,6 +71,10 @@ describe('interfazServicio', () => {
     expect(config.flujo_formulario?.terminos.boton_cerrar).toBe('Cerrar API');
     expect(config.flujo_formulario?.terminos.enlace_terminos).toBe('Enlace API');
     expect(config.flujo_formulario?.terminos.email_soporte).toBe('soporte@dane.gov.co');
+    expect(config.flujo_formulario?.envio_exitoso.imagen_url).toBe(
+      'https://res.cloudinary.com/demo/exito.png'
+    );
+    expect(config.flujo_formulario?.envio_exitoso.imagen_alt).toBe('Encuesta enviada');
     expect(config.flujo_formulario_es_fallback).toBe(false);
   });
 

@@ -54,4 +54,8 @@ export const FLUJO_FORMULARIO_FALLBACK: FlujoFormularioInterfaz = {
     texto_enlace_ley: 'Consultar Ley 1581 de 2012',
     texto_enlace_politica_datos: 'Política de Protección de Datos Personales',
   },
+  envio_exitoso: {
+    imagen_url: null,
+    imagen_alt: 'Encuesta enviada con éxito',
+  },
 };

@@ -4,6 +4,7 @@
 
 import type {
   FlujoFormularioInterfaz,
+  TextosEnvioExitoso,
   TextosModalGuardado,
   TextosModalSalir,
   TextosModalSesion,
@@ -100,11 +101,22 @@ function combinarTerminos(
   };
 }
 
+function combinarEnvioExitoso(
+  parcial: Partial<TextosEnvioExitoso> | undefined,
+  fallback: TextosEnvioExitoso
+): TextosEnvioExitoso {
+  return {
+    imagen_url: textoONulo(parcial?.imagen_url),
+    imagen_alt: combinarTexto(parcial?.imagen_alt, fallback.imagen_alt),
+  };
+}
+
 export type FlujoFormularioEntrada = {
   modal_salir?: Partial<TextosModalSalir>;
   modal_sesion?: Partial<TextosModalSesion>;
   modal_guardado?: Partial<TextosModalGuardado>;
   terminos?: Partial<TextosTerminosInterfaz>;
+  envio_exitoso?: Partial<TextosEnvioExitoso>;
 };
 
 export interface ParametrosResolverFlujoFormulario {
@@ -140,6 +152,10 @@ export function resolverFlujoFormulario(
       parcial?.terminos,
       FLUJO_FORMULARIO_FALLBACK.terminos,
       configuracion.email_soporte
+    ),
+    envio_exitoso: combinarEnvioExitoso(
+      parcial?.envio_exitoso,
+      FLUJO_FORMULARIO_FALLBACK.envio_exitoso
     ),
   };
 

@@ -23,6 +23,10 @@ interface PantallaEnvioExitosoProps {
   readonly subtitulo?: string;
   /** URL de la imagen de portada del formulario */
   readonly imagenPortada?: string | null;
+  /** URL de la imagen parametrizada de la pantalla de envio exitoso */
+  readonly imagenExito?: string | null;
+  /** Texto alternativo de la imagen de envio exitoso */
+  readonly imagenExitoAlt?: string;
   /** Nombre del formulario para alt de la imagen */
   readonly nombreFormulario?: string;
   /** URL para "Ver otras encuestas". Default '/encuestas'. */
@@ -39,12 +43,19 @@ export function PantallaEnvioExitoso({
   titulo = 'Encuesta enviada con éxito',
   subtitulo,
   imagenPortada,
+  imagenExito,
+  imagenExitoAlt,
   nombreFormulario = 'Encuesta',
   urlOtrasEncuestas = '/encuestas',
   urlResumen,
   urlLogin = '/auth/login',
   esAnonimo = false,
 }: PantallaEnvioExitosoProps) {
+  const imagenSuperior = imagenExito ?? imagenPortada;
+  const textoAlternativo = imagenExito
+    ? imagenExitoAlt || titulo
+    : `Portada: ${nombreFormulario}`;
+
   return (
     <div
       className="rounded-2xl overflow-hidden flex flex-col"
@@ -53,12 +64,12 @@ export function PantallaEnvioExitoso({
         boxShadow: 'var(--sombra-md)',
       }}
     >
-      {/* Imagen de portada */}
-      {imagenPortada && (
+      {/* Imagen superior: prioriza la imagen parametrizada de envio exitoso */}
+      {imagenSuperior && (
         <div className="relative w-full" style={{ height: '180px' }}>
           <Image
-            src={imagenPortada}
-            alt={`Portada: ${nombreFormulario}`}
+            src={imagenSuperior}
+            alt={textoAlternativo}
             fill
             style={{ objectFit: 'cover' }}
             priority
