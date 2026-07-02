@@ -78,7 +78,11 @@ export default async function PaginaResponder({ params }: PaginaResponderProps) 
             {estructura.introduccion}
           </p>
         )}
-        <EncuestaResponderCliente uuidFormulario={uuid} estructura={estructura} />
+        <EncuestaResponderCliente
+          uuidFormulario={uuid}
+          estructura={estructura}
+          permiteOffline={formularioDisponible?.permite_offline ?? true}
+        />
       </div>
     </ContenedorPagina>
   );

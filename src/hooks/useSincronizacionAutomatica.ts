@@ -17,6 +17,8 @@ import { contarOperacionesPendientes } from '@/storage/colaSincronizacion';
 import { useSincronizacionOffline } from '@/hooks/useSincronizacionOffline';
 import { ejecutarSinEspera } from '@/utils/ejecutarSinEspera';
 
+const INTERVALO_REINTENTO_MS = 30000;
+
 interface OpcionesSincronizacionAutomatica {
   listo: boolean;
   uuidFormulario: string;
@@ -130,6 +132,20 @@ export function useSincronizacionAutomatica({
     }
     ejecutarSinEspera(actualizarConteoPendientes());
   }, [actualizarConteoPendientes, listo]);
+
+  useEffect(() => {
+    if (!listo) {
+      return;
+    }
+
+    const intervalo = setInterval(() => {
+      if (useOfflineStore.getState().enLinea) {
+        ejecutarSinEspera(sincronizarEnSegundoPlano());
+      }
+    }, INTERVALO_REINTENTO_MS);
+
+    return () => clearInterval(intervalo);
+  }, [listo, sincronizarEnSegundoPlano]);
 
   useEffect(() => {
     const reconectado = !enLineaAnterior.current && enLinea;

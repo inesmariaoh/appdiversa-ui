@@ -60,6 +60,7 @@ import {
   respuestaPermiteContinuar,
 } from '@/utils/validacionPregunta';
 import { construirEsquemaFormulario } from '@/utils/esquemaFormularioZod';
+import { debeBloquearFormularioOffline } from '@/utils/bloqueoOffline';
 import {
   contenidoTextoFormulario,
   obtenerOpcionesConfirmacionEnvio,
@@ -89,6 +90,10 @@ const RenderizadorPregunta = dynamic(
   { loading: () => <SkeletonFormulario /> }
 );
 
+const MENSAJE_BLOQUEO_OFFLINE =
+  'Este formulario no está habilitado para responderse sin conexión. ' +
+  'Conéctese a internet para continuar.';
+
 interface PanelFormularioProps {
   readonly uuidFormulario: string;
   readonly estructura: FormularioEstructura;
@@ -96,6 +101,8 @@ interface PanelFormularioProps {
   readonly modoPreview?: boolean;
   /** Indica que el consentimiento ya fue otorgado en el flujo de filtros. */
   readonly consentimientoPreaceptado?: boolean;
+  /** Habilita el diligenciamiento sin conexion segun la parametrizacion del formulario. */
+  readonly permiteOffline?: boolean;
 }
 
 function resolverCamposGrupoActual(
@@ -382,6 +389,27 @@ function VistaNoAplicaFormulario({ onVolverInicio }: { readonly onVolverInicio: 
   );
 }
 
+function VistaBloqueoOffline({ onVolverInicio }: { readonly onVolverInicio: () => void }) {
+  return (
+    <div
+      className="rounded-xl p-6 flex flex-col gap-4"
+      style={{ backgroundColor: 'var(--color-fondo-tarjeta)' }}
+    >
+      <output
+        role="alert"
+        aria-live="assertive"
+        className="block"
+        style={{ color: 'var(--color-texto-primario)' }}
+      >
+        {MENSAJE_BLOQUEO_OFFLINE}
+      </output>
+      <Boton variante="secundario" ancho="auto" onClick={onVolverInicio}>
+        Volver al inicio
+      </Boton>
+    </div>
+  );
+}
+
 export function PanelFormulario(props: PanelFormularioProps) {
   const rutaActual = `/encuestas/${props.uuidFormulario}/responder`;
   return (
@@ -400,6 +428,7 @@ function PanelFormularioContenido({
   estructura,
   modoPreview = false,
   consentimientoPreaceptado = false,
+  permiteOffline = true,
 }: PanelFormularioProps) {
   const flujo = useFlujoModalesFormularioContext();
   const router = useRouter();
@@ -715,6 +744,10 @@ function PanelFormularioContenido({
 
   if (vistaIntermedia) {
     return vistaIntermedia;
+  }
+
+  if (debeBloquearFormularioOffline({ modoPreview, enLinea, permiteOffline })) {
+    return <VistaBloqueoOffline onVolverInicio={() => router.push('/')} />;
   }
 
   const deshabilitada = !preguntaHabilitadaSegunReglas(

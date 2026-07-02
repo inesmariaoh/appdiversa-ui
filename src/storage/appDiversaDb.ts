@@ -35,6 +35,8 @@ export interface RegistroRespuestaLocal {
 export interface RegistroColaSincronizacion extends OperacionSincronizacionEntrada {
   uuid_sesion: string;
   estado: 'pendiente' | 'error';
+  numero_reintentos?: number;
+  proximo_reintento?: string;
 }
 
 export interface RegistroErrorSincronizacion {

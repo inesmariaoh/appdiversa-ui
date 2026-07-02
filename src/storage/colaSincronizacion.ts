@@ -4,6 +4,15 @@
 
 import type { RegistroColaSincronizacion } from './appDiversaDb';
 import { appDiversaDb } from './appDiversaDb';
+import {
+  operacionListaParaReintento,
+  puedeReintentar,
+} from '@/utils/backoffSincronizacion';
+
+interface MetadatosReintento {
+  numero_reintentos: number;
+  proximo_reintento: string;
+}
 
 export async function agregarOperacionCola(
   operacion: RegistroColaSincronizacion
@@ -25,12 +34,41 @@ export async function eliminarOperacionCola(uuidLocal: string): Promise<void> {
 
 export async function marcarOperacionEstado(
   uuidLocal: string,
-  estado: 'pendiente' | 'error'
+  estado: 'pendiente' | 'error',
+  metadatos?: MetadatosReintento
 ): Promise<void> {
   const operacion = await appDiversaDb.cola_sincronizacion.get(uuidLocal);
-  if (operacion) {
-    await appDiversaDb.cola_sincronizacion.put({ ...operacion, estado });
+  if (!operacion) return;
+
+  const actualizada: RegistroColaSincronizacion = { ...operacion, estado };
+  if (metadatos) {
+    actualizada.numero_reintentos = metadatos.numero_reintentos;
+    actualizada.proximo_reintento = metadatos.proximo_reintento;
   }
+  await appDiversaDb.cola_sincronizacion.put(actualizada);
+}
+
+export async function reactivarOperacionesReintentables(
+  uuidSesion: string,
+  ahoraMs: number
+): Promise<number> {
+  const enError = await appDiversaDb.cola_sincronizacion
+    .where({ uuid_sesion: uuidSesion, estado: 'error' })
+    .toArray();
+
+  const reactivables = enError.filter(
+    (operacion) =>
+      puedeReintentar(operacion.numero_reintentos ?? 0) &&
+      operacionListaParaReintento(operacion.proximo_reintento, ahoraMs)
+  );
+
+  await Promise.all(
+    reactivables.map((operacion) =>
+      appDiversaDb.cola_sincronizacion.put({ ...operacion, estado: 'pendiente' })
+    )
+  );
+
+  return reactivables.length;
 }
 
 export async function eliminarOperacionesExitosas(

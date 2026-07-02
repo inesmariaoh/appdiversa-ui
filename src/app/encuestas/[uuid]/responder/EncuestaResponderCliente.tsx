@@ -17,11 +17,13 @@ import { filtrosCompletados } from '@/storage/filtrosSesion';
 interface EncuestaResponderClienteProps {
   readonly uuidFormulario: string;
   readonly estructura: FormularioEstructura;
+  readonly permiteOffline?: boolean;
 }
 
 export function EncuestaResponderCliente({
   uuidFormulario,
   estructura,
+  permiteOffline = true,
 }: EncuestaResponderClienteProps) {
   const router = useRouter();
   const requiereFiltros = formularioTienePreguntasFiltro(estructura);
@@ -42,6 +44,7 @@ export function EncuestaResponderCliente({
       uuidFormulario={uuidFormulario}
       estructura={estructuraPrincipal}
       consentimientoPreaceptado={requiereFiltros}
+      permiteOffline={permiteOffline}
     />
   );
 }

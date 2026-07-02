@@ -14,11 +14,25 @@ import {
   eliminarOperacionCola,
   marcarOperacionEstado,
   obtenerOperacionesPendientes,
+  reactivarOperacionesReintentables,
   registrarErrorSincronizacion,
 } from '@/storage/colaSincronizacion';
+import { calcularProximoReintento } from '@/utils/backoffSincronizacion';
 import { extraerDetalleError } from '@/utils/erroresApi';
 
 const VERSION_APP = '0.1.0';
+
+async function marcarOperacionFallida(
+  operacion: { uuid_local: string; numero_reintentos?: number },
+  detalle: string
+): Promise<void> {
+  const nuevosReintentos = (operacion.numero_reintentos ?? 0) + 1;
+  await marcarOperacionEstado(operacion.uuid_local, 'error', {
+    numero_reintentos: nuevosReintentos,
+    proximo_reintento: calcularProximoReintento(nuevosReintentos, Date.now()),
+  });
+  await registrarErrorSincronizacion(operacion.uuid_local, detalle);
+}
 
 export function useSincronizacionOffline() {
   const establecerSincronizando = useOfflineStore((s) => s.establecerSincronizando);
@@ -33,6 +47,8 @@ export function useSincronizacionOffline() {
   const sincronizarPendientes = useCallback(async (): Promise<boolean> => {
     const { uuidSesion, tokenCliente } = useSesionStore.getState();
     if (!uuidSesion || !tokenCliente) return false;
+
+    await reactivarOperacionesReintentables(uuidSesion, Date.now());
 
     const pendientes = await obtenerOperacionesPendientes(uuidSesion);
     if (pendientes.length === 0) {
@@ -70,14 +86,13 @@ export function useSincronizacionOffline() {
 
       for (const operacion of pendientes) {
         if (uuidsFallidos.has(operacion.uuid_local)) {
-          await marcarOperacionEstado(operacion.uuid_local, 'error');
           const detalle =
             resultado.errores.find((e) => e.uuid_local === operacion.uuid_local)
               ?.mensaje ??
             resultado.conflictos.find((c) => c.uuid_local === operacion.uuid_local)
               ?.mensaje ??
             'Error de sincronizacion';
-          await registrarErrorSincronizacion(operacion.uuid_local, detalle ?? 'Error');
+          await marcarOperacionFallida(operacion, detalle);
         } else {
           await eliminarOperacionCola(operacion.uuid_local);
         }

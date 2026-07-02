@@ -3,11 +3,17 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useRestaurarRespuestas } from './useRestaurarRespuestas';
 import { useSesionStore } from '@/store/sesionStore';
 import { useRespuestasStore } from '@/store/respuestasStore';
+import { useOfflineStore } from '@/store/offlineStore';
 import { obtenerRespuestasSesion } from '@/services/sesionesServicio';
+import { obtenerRespuestasPorSesion } from '@/storage/respuestasLocal';
 import type { Pregunta } from '@/types/formulario';
 
 vi.mock('@/services/sesionesServicio', () => ({
   obtenerRespuestasSesion: vi.fn(),
+}));
+
+vi.mock('@/storage/respuestasLocal', () => ({
+  obtenerRespuestasPorSesion: vi.fn(),
 }));
 
 const pregunta: Pregunta = {
@@ -48,7 +54,10 @@ describe('useRestaurarRespuestas', () => {
     reset.mockReset();
     useSesionStore.getState().limpiar();
     useRespuestasStore.setState({ respuestas: {} });
+    useOfflineStore.getState().establecerEnLinea(true);
     vi.mocked(obtenerRespuestasSesion).mockReset();
+    vi.mocked(obtenerRespuestasPorSesion).mockReset();
+    vi.mocked(obtenerRespuestasPorSesion).mockResolvedValue([]);
   });
 
   it('restaura valores en el formulario desde el backend', async () => {
@@ -96,5 +105,70 @@ describe('useRestaurarRespuestas', () => {
     });
 
     expect(useRespuestasStore.getState().obtenerRespuesta('P1')?.valor).toBe('Juan');
+  });
+
+  it('restaura desde IndexedDB cuando esta offline', async () => {
+    useSesionStore.getState().establecerSesion({
+      uuidSesion: 'sesion-1',
+      tokenCliente: 'token-1',
+      uuidFormulario: 'form-1',
+      estado: 'en_proceso',
+    });
+    useOfflineStore.getState().establecerEnLinea(false);
+
+    vi.mocked(obtenerRespuestasPorSesion).mockResolvedValue([
+      {
+        uuid_local: 'local-1',
+        uuid_sesion: 'sesion-1',
+        codigo_pregunta: 'P1',
+        valor: 'Ana',
+        version_cliente: 3,
+        fecha_cliente: '2026-01-02T00:00:00.000Z',
+        checksum: 'abc',
+      },
+    ]);
+
+    renderHook(() =>
+      useRestaurarRespuestas({ listo: true, preguntas: [pregunta], reset })
+    );
+
+    await waitFor(() => {
+      expect(reset).toHaveBeenCalledWith(expect.objectContaining({ P1: 'Ana' }));
+    });
+
+    expect(obtenerRespuestasSesion).not.toHaveBeenCalled();
+    const almacenada = useRespuestasStore.getState().obtenerRespuesta('P1');
+    expect(almacenada?.valor).toBe('Ana');
+    expect(almacenada?.origenRespuesta).toBe('offline');
+  });
+
+  it('usa IndexedDB como respaldo si falla el backend', async () => {
+    useSesionStore.getState().establecerSesion({
+      uuidSesion: 'sesion-1',
+      tokenCliente: 'token-1',
+      uuidFormulario: 'form-1',
+      estado: 'en_proceso',
+    });
+
+    vi.mocked(obtenerRespuestasSesion).mockRejectedValue(new Error('sin red'));
+    vi.mocked(obtenerRespuestasPorSesion).mockResolvedValue([
+      {
+        uuid_local: 'local-2',
+        uuid_sesion: 'sesion-1',
+        codigo_pregunta: 'P1',
+        valor: 'Local',
+        version_cliente: 1,
+        fecha_cliente: '2026-01-03T00:00:00.000Z',
+        checksum: 'def',
+      },
+    ]);
+
+    renderHook(() =>
+      useRestaurarRespuestas({ listo: true, preguntas: [pregunta], reset })
+    );
+
+    await waitFor(() => {
+      expect(reset).toHaveBeenCalledWith(expect.objectContaining({ P1: 'Local' }));
+    });
   });
 });

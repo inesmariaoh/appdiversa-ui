@@ -20,6 +20,7 @@ vi.mock('@/storage/colaSincronizacion', () => ({
   obtenerOperacionesPendientes: vi.fn(),
   eliminarOperacionCola: vi.fn(),
   marcarOperacionEstado: vi.fn(),
+  reactivarOperacionesReintentables: vi.fn(),
   registrarErrorSincronizacion: vi.fn(),
 }));
 
@@ -27,6 +28,7 @@ import {
   obtenerOperacionesPendientes,
   eliminarOperacionCola,
   marcarOperacionEstado,
+  reactivarOperacionesReintentables,
   registrarErrorSincronizacion,
 } from '@/storage/colaSincronizacion';
 
@@ -42,6 +44,8 @@ describe('useSincronizacionOffline', () => {
     useReglasStore.getState().limpiar();
     vi.mocked(obtenerOperacionesPendientes).mockReset();
     vi.mocked(sincronizarBatch).mockReset();
+    vi.mocked(reactivarOperacionesReintentables).mockReset();
+    vi.mocked(reactivarOperacionesReintentables).mockResolvedValue(0);
     vi.mocked(evaluarReglasSesion).mockResolvedValue(RESULTADO_REGLAS_VACIO);
   });
 
@@ -147,7 +151,12 @@ describe('useSincronizacionOffline', () => {
     });
 
     expect(exito).toBe(false);
-    expect(marcarOperacionEstado).toHaveBeenCalledWith('op-2', 'error');
+    expect(marcarOperacionEstado).toHaveBeenCalledWith(
+      'op-2',
+      'error',
+      expect.objectContaining({ numero_reintentos: 1 })
+    );
+    expect(reactivarOperacionesReintentables).toHaveBeenCalledWith('s1', expect.any(Number));
   });
 
   it('retorna false cuando no hay sesion', async () => {
