@@ -14,7 +14,7 @@ interface CampoTextoProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const CampoTexto = forwardRef<HTMLInputElement, CampoTextoProps>(
-  function CampoTexto({ etiqueta, error, ayuda, id, className, ...rest }, ref) {
+  function CampoTexto({ etiqueta, error, ayuda, id, className, style, ...rest }, ref) {
     const idCampo = id ?? `campo-${etiqueta.toLowerCase().replace(/\s+/g, '-')}`;
     const idError = error ? `${idCampo}-error` : undefined;
     const idAyuda = ayuda ? `${idCampo}-ayuda` : undefined;
@@ -44,6 +44,7 @@ export const CampoTexto = forwardRef<HTMLInputElement, CampoTextoProps>(
             backgroundColor: 'var(--color-fondo-tarjeta)',
             color: 'var(--color-texto-primario)',
             outline: 'none',
+            ...style,
           }}
           onFocus={(e) => {
             e.currentTarget.style.borderColor = 'var(--color-primario)';

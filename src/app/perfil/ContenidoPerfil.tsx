@@ -22,7 +22,7 @@ import { extraerDetalleError } from '@/utils/erroresApi';
 import { ejecutarSinEspera } from '@/utils/ejecutarSinEspera';
 
 const ESTILO_CAMPO_SOLO_LECTURA = {
-  backgroundColor: 'var(--color-fondo-pagina)',
+  backgroundColor: 'var(--color-fondo-tarjeta)',
   cursor: 'default',
 } as const;
 
