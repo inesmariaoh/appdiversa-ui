@@ -90,7 +90,7 @@ export function Modal({
         open
         aria-labelledby={idTitulo}
         aria-describedby={descripcion ? idDescripcion : undefined}
-        className={`relative w-full ${TAMANOS[tamano]} rounded-2xl border-0 p-6 sm:p-8 shadow-2xl m-0`}
+        className={`relative w-full ${TAMANOS[tamano]} max-h-[90dvh] flex flex-col rounded-2xl border-0 p-5 sm:p-8 shadow-2xl m-0`}
         style={{ backgroundColor: 'var(--color-fondo-tarjeta)' }}
       >
         {/* Boton cerrar (X) */}
@@ -113,7 +113,7 @@ export function Modal({
         {/* Titulo (accesible via aria-labelledby) */}
         <h2
           id={idTitulo}
-          className={`font-bold mb-4 ${centrado ? 'text-center px-8' : 'pr-8'} ${tamano === 'xl' ? 'text-2xl leading-snug' : 'text-xl'}`}
+          className={`shrink-0 font-bold mb-4 ${centrado ? 'text-center px-8' : 'pr-8'} ${tamano === 'xl' ? 'text-2xl leading-snug' : 'text-xl'}`}
           style={{ color: 'var(--color-texto-primario)' }}
         >
           {titulo}
@@ -125,7 +125,9 @@ export function Modal({
           </p>
         )}
 
-        {children}
+        <div className="min-h-0 flex-1 flex flex-col overflow-y-auto">
+          {children}
+        </div>
       </dialog>
     </div>
   );

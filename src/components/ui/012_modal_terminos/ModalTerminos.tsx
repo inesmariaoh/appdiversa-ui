@@ -41,10 +41,9 @@ export function ModalTerminos({
       mostrarBotonCerrar={!bloqueante}
       alineacion="center"
     >
-      <div className="mx-auto w-full max-w-md">
+      <div className="mx-auto flex w-full max-w-md min-h-0 flex-1 flex-col">
         <div
-          className="overflow-y-auto mb-6 pr-1 -mr-1"
-          style={{ maxHeight: 'min(62vh, 32rem)' }}
+          className="min-h-0 flex-1 overflow-y-auto mb-5 pr-1 -mr-1"
           aria-labelledby="modal-terminos-cuerpo"
         >
           <ContenidoTerminos
@@ -52,12 +51,12 @@ export function ModalTerminos({
             idDescripcion={idCuerpo}
             mostrarEnlacePublico
             urlPaginaTerminos={urlPaginaTerminos}
-            className="text-base leading-7 space-y-5"
+            className="text-sm leading-6 space-y-4 sm:text-base sm:leading-7 sm:space-y-5"
             centrado
           />
         </div>
 
-        <div className="flex flex-col items-center gap-3">
+        <div className="shrink-0 flex flex-col items-center gap-3">
           {onAceptar && (
             <button
               type="button"
