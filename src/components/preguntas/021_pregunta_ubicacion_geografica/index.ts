@@ -1,0 +1,1 @@
+export { PreguntaUbicacionGeografica } from './PreguntaUbicacionGeografica';

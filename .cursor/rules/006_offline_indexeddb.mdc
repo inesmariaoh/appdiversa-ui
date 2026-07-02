@@ -1,0 +1,49 @@
+---
+description: Reglas offline IndexedDB AppDiversa UI
+alwaysApply: true
+---
+
+# 006 — Offline e IndexedDB
+
+## Almacenamiento
+
+Usar Dexie.js sobre IndexedDB.
+
+Está prohibido usar LocalStorage para respuestas o tokens.
+
+## Sincronización
+
+La sincronización offline debe usar únicamente:
+
+```text
+POST /api/v1/sincronizacion/
+```
+
+Está prohibido sincronizar respuesta por respuesta.
+
+## Operación offline
+
+Cada operación debe tener:
+
+- uuid_local
+- codigo_pregunta
+- valor
+- version_cliente
+- fecha_cliente
+- checksum
+
+## Stores locales sugeridos
+
+- formularios_cache
+- sesiones
+- respuestas_locales
+- cola_sincronizacion
+- errores_sincronizacion
+- catalogos_cache
+
+## Reglas
+
+- Reintentar solo operaciones pendientes o con error.
+- Mantener el mismo uuid_local para la misma respuesta lógica.
+- Incrementar version_cliente solo cuando el usuario edite el valor.
+- Antes de finalizar, sincronizar batch pendiente.

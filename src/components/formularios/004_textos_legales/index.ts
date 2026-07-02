@@ -1,0 +1,1 @@
+export { TextosLegales } from './TextosLegales';

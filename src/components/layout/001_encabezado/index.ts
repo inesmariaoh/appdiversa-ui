@@ -1,0 +1,1 @@
+export { Encabezado } from './Encabezado';

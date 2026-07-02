@@ -1,0 +1,1 @@
+export { AnuncioReglas } from './AnuncioReglas';

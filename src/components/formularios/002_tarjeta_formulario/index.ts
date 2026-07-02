@@ -1,0 +1,1 @@
+export { TarjetaFormulario } from './TarjetaFormulario';

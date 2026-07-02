@@ -1,0 +1,1 @@
+export { MenuLateralAdmin } from './MenuLateralAdmin';

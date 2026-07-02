@@ -1,0 +1,1 @@
+export { PantallaEnvioExitoso } from './PantallaEnvioExitoso';

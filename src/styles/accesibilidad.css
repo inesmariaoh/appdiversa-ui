@@ -1,0 +1,210 @@
+/**
+ * Estilos transversales de accesibilidad para AppDiversa UI.
+ * WCAG 2.1 AAA + ARIA.
+ */
+
+/* --- Foco visible ----------------------------------------- */
+:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- Alto contraste -------------------------------------- */
+/*
+ * Aplicamos filter en html (no body) para máxima cobertura.
+ * hue-rotate(180deg) compensa el tono para que el resultado sea
+ * un modo oscuro de alto contraste en lugar de colores neón invertidos.
+ * Las imágenes/video reciben doble inversión para verse en sus colores originales.
+ * La barra flotante también se doble-invierte para restaurar sus colores de marca.
+ *
+ * NOTA: las variables CSS inline del tema no se pueden sobreescribir vía CSS
+ * cuando fueron inyectadas con element.style.setProperty() (especificidad inline).
+ * Por eso usamos filter como mecanismo principal.
+ */
+
+html[data-alto-contraste='true'] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Doble inversión: imágenes y video quedan en sus colores originales */
+html[data-alto-contraste='true'] img,
+html[data-alto-contraste='true'] video,
+html[data-alto-contraste='true'] iframe,
+html[data-alto-contraste='true'] svg image {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Doble inversión: la barra flotante conserva sus colores de marca */
+html[data-alto-contraste='true'] .barra-flotante {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-alto-contraste='true'] *:focus-visible {
+  outline: 4px solid #ffff00;
+  outline-offset: 2px;
+}
+
+/* --- Reducir animaciones --------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-reducir-animaciones='true'] *,
+[data-reducir-animaciones='true'] *::before,
+[data-reducir-animaciones='true'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* --- Skip link (saltar al contenido principal) ----------- */
+.saltar-al-contenido {
+  position: absolute;
+  top: -9999px;
+  left: 0;
+  z-index: 9999;
+  padding: var(--espacio-sm) var(--espacio-md);
+  background: var(--color-primario);
+  color: var(--color-texto-invertido);
+  font-weight: var(--peso-negrita);
+  text-decoration: none;
+  border-radius: 0 0 var(--radio-borde) 0;
+}
+
+.saltar-al-contenido:focus {
+  top: 0;
+}
+
+/* --- Solo lectores de pantalla --------------------------- */
+.solo-lector-pantalla {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Barra flotante de accesibilidad (derecha) ----------- */
+.barra-flotante {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-primario);
+  border-radius: 6px 0 0 6px;
+  padding: 6px 0;
+  gap: 2px;
+  box-shadow: -2px 0 8px rgb(0 0 0 / 0.15);
+}
+
+.barra-flotante-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: width 280ms ease-in-out, background-color 180ms;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.barra-flotante-btn:hover,
+.barra-flotante-btn:focus-visible {
+  width: 190px;
+  background-color: color-mix(in srgb, var(--color-primario) 80%, white 20%);
+  outline: none;
+}
+
+.barra-flotante-btn:focus-visible {
+  outline: 3px solid white;
+  outline-offset: -3px;
+}
+
+/* Icono: cuadrado blanco, siempre visible, anclado a la derecha */
+.barra-flotante-icono {
+  position: absolute;
+  right: 7px;
+  width: 30px;
+  height: 30px;
+  background-color: #ffffff;
+  color: var(--color-primario);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Texto: oculto por defecto, aparece al expandir */
+.barra-flotante-texto {
+  position: absolute;
+  left: 8px;
+  right: 44px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out 100ms;
+}
+
+.barra-flotante-btn:hover .barra-flotante-texto,
+.barra-flotante-btn:focus-visible .barra-flotante-texto {
+  opacity: 1;
+}
+
+/* Estado activo (aria-pressed=true): icono con color acento */
+.barra-flotante-btn[aria-pressed='true'] .barra-flotante-icono {
+  background-color: var(--color-acento);
+  color: #ffffff;
+}
+
+/* Deshabilitado */
+.barra-flotante-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.barra-flotante-btn:disabled:hover {
+  width: 44px;
+  background-color: transparent;
+}
+.barra-flotante-btn:disabled:hover .barra-flotante-texto {
+  opacity: 0;
+}
+
+/* Separador visual entre grupos de botones */
+.barra-flotante-separador {
+  height: 1px;
+  background-color: rgb(255 255 255 / 0.2);
+  margin: 2px 8px;
+}
+
+@media (max-width: 768px) {
+  .barra-flotante-btn { width: 38px; height: 38px; }
+  .barra-flotante-btn:hover,
+  .barra-flotante-btn:focus-visible { width: 170px; }
+  .barra-flotante-icono { width: 26px; height: 26px; right: 6px; }
+}

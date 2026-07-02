@@ -1,0 +1,1 @@
+export { BarraAccionesFormulario } from './BarraAccionesFormulario';

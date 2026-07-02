@@ -1,0 +1,1 @@
+export { RenderizadorPregunta } from './RenderizadorPregunta';

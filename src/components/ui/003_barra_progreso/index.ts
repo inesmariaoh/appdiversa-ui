@@ -1,0 +1,1 @@
+export { BarraProgreso } from './BarraProgreso';

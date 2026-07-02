@@ -1,0 +1,1 @@
+export { PreguntaFechaNacimiento } from './PreguntaFechaNacimiento';

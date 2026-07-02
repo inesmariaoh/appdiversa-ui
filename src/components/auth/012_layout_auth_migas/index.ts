@@ -1,0 +1,1 @@
+export { LayoutAuthMigas } from './LayoutAuthMigas';

@@ -1,0 +1,1 @@
+export { FormularioBaseAdmin } from './FormularioBaseAdmin';

@@ -1,0 +1,1 @@
+export { IndicadorConexion } from './IndicadorConexion';

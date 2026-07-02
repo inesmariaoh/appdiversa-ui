@@ -1,0 +1,63 @@
+---
+description: Reglas del renderizador dinámico de formularios AppDiversa UI
+alwaysApply: true
+---
+
+# 004 — Motor de formularios dinámicos
+
+## Renderizado
+
+Renderizar preguntas únicamente desde:
+
+```text
+tipo_pregunta
+```
+
+No crear componentes específicos para una encuesta.
+
+## Tipos soportados
+
+El frontend debe soportar todos los tipos definidos por el backend:
+
+- texto_corto
+- texto_largo
+- numero
+- fecha
+- hora
+- fecha_hora
+- radio
+- checkbox
+- select
+- select_multiple
+- autocomplete
+- likert
+- matriz
+- archivo
+- firma
+- geolocalizacion
+- audio
+- video
+
+Si falta un tipo en `src/types/formulario.ts`, ampliar el union type antes de implementar.
+
+## Catálogos
+
+Si una pregunta tiene `usa_catalogo=true`, consumir `catalogo_asociado.endpoint_items`.
+
+Si tiene `pregunta_padre_catalogo`, filtrar por `codigo_padre` usando la respuesta de la pregunta padre.
+
+## Reglas
+
+El backend es la fuente autorizada. El frontend solo aplica:
+
+- preguntas_ocultas
+- preguntas_visibles
+- preguntas_deshabilitadas
+- preguntas_habilitadas
+- preguntas_obligatorias
+- preguntas_opcionales
+- saltar_a_pregunta
+- saltar_a_seccion
+- finalizar_formulario
+- no_aplica_formulario
+- mensajes

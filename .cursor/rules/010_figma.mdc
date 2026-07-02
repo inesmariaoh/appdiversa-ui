@@ -1,0 +1,30 @@
+---
+description: Reglas para implementar UI desde Figma en AppDiversa
+alwaysApply: true
+---
+
+# 010 — Figma y UI
+
+Figma define apariencia visual, no datos.
+
+Desde Figma se pueden tomar:
+
+- espaciados
+- tipografía
+- layout
+- comportamiento visual
+- estados
+- jerarquía
+- responsive
+- componentes
+
+No tomar de Figma como datos quemados:
+
+- preguntas
+- opciones
+- textos legales
+- formularios
+- logos definitivos
+- colores fijos
+
+Los colores y logos deben venir del backend.

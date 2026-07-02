@@ -1,0 +1,1 @@
+export { AlertaVerificacion } from './AlertaVerificacion';

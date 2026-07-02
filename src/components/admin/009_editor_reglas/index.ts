@@ -1,0 +1,1 @@
+export { EditorReglas } from './EditorReglas';

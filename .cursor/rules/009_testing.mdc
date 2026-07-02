@@ -1,0 +1,41 @@
+---
+description: Reglas de pruebas frontend AppDiversa UI
+alwaysApply: true
+---
+
+# 009 — Testing
+
+Usar:
+
+- Vitest
+- React Testing Library
+- Playwright
+
+## Pruebas mínimas
+
+Cubrir:
+
+- servicios API
+- renderizador dinámico
+- componentes de pregunta
+- stores Zustand
+- IndexedDB/Dexie
+- motor de reglas en UI
+- creación de sesión
+- guardado de respuesta
+- sincronización offline
+- validación final
+- resumen
+- errores API
+
+## E2E mínimos
+
+- cargar configuración
+- listar formularios
+- crear sesión
+- responder formulario
+- evaluar reglas
+- validar finalización
+- finalizar
+- ver resumen
+- flujo offline: cola → sincronización → finalizar

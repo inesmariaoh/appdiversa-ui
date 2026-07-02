@@ -1,0 +1,1 @@
+export { PreguntaAudio } from './PreguntaAudio';

@@ -1,0 +1,53 @@
+---
+description: Reglas estrictas de calidad SonarQube frontend AppDiversa UI
+alwaysApply: true
+---
+
+# 007 — Calidad SonarQube Frontend
+
+Todo código debe cumplir estándares de SonarQube, TypeScript Strict, ESLint y Prettier.
+
+## Prohibido
+
+- Usar `any` sin justificación.
+- Usar `@ts-ignore`.
+- Dejar variables sin usar.
+- Dejar imports duplicados.
+- Dejar código muerto.
+- Usar funciones largas.
+- Crear componentes gigantes.
+- Duplicar lógica.
+- Crear dependencias circulares.
+- Usar `console.log` en producción.
+- Dejar TODO/FIXME sin ticket o explicación.
+- Capturar errores silenciosamente.
+- Renderizar HTML sin sanitización cuando venga del backend.
+
+## Complejidad
+
+- Mantener baja complejidad cognitiva.
+- Extraer funciones puras a `src/utils`.
+- Extraer lógica de UI a hooks.
+- Evitar condicionales anidados profundos.
+- Usar early return cuando mejore legibilidad.
+
+## Tipado
+
+- Tipar props, hooks, servicios y stores.
+- Preferir tipos derivados de OpenAPI.
+- No duplicar tipos globales dentro de componentes.
+
+## React
+
+- Evitar renders innecesarios.
+- Memoizar solo cuando aporte valor real.
+- No abusar de `useEffect`.
+- No hacer llamadas API dentro de JSX.
+- No mezclar lógica de negocio con presentación.
+
+## Seguridad
+
+- No loguear tokens.
+- No exponer secretos.
+- No usar API_INTERNA_TOKEN.
+- No imprimir payloads sensibles.

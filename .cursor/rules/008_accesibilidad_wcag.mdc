@@ -1,0 +1,42 @@
+---
+description: Reglas WCAG de accesibilidad AppDiversa UI
+alwaysApply: true
+---
+
+# 008 — Accesibilidad WCAG
+
+Cumplir WCAG 2.1 AAA como objetivo del proyecto.
+
+## Obligatorio
+
+- Labels asociados a controles.
+- Foco visible.
+- Navegación por teclado.
+- aria-describedby para errores, ayudas y tooltips.
+- Texto alternativo en imágenes.
+- Contraste suficiente.
+- Soporte alto contraste.
+- Escalado de texto.
+- Reducción de animaciones.
+- Mensajes de error accesibles.
+- Anuncios para lectores de pantalla cuando cambien reglas o estados.
+
+## Contenido accesible
+
+Si el backend entrega `contenido_accesible`, usarlo cuando aplique:
+
+- lectura_facil
+- texto_alternativo
+- transcripcion
+- archivo_audio
+- archivo_video
+- archivo_imagen
+- archivo_lengua_senas
+
+## Lengua de señas
+
+Mostrar botón solo si el backend envía:
+
+```text
+accion_lengua_senas_habilitada=true
+```

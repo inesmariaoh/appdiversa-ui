@@ -1,0 +1,1 @@
+export { MenuPerfil } from './MenuPerfil';

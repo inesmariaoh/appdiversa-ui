@@ -1,0 +1,1 @@
+export { ResumenSesion } from './ResumenSesion';

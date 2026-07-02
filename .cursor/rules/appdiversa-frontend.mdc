@@ -1,0 +1,83 @@
+---
+alwaysApply: true
+---
+---
+description: Reglas obligatorias para desarrollo frontend AppDiversa UI
+alwaysApply: true
+---
+
+# Reglas Frontend AppDiversa UI
+
+## Contexto obligatorio
+
+Antes de escribir o modificar código, revisar la documentación en:
+
+D:\C\APPDIVERSA\appdiversa-ui\Contexto
+
+Archivos clave:
+
+- openapi_export.json
+- 01_arquitectura_frontend_backend.md
+- 02_flujo_completo_aplicacion.md
+- 03_endpoints_publicos.md
+- 04_endpoints_protegidos.md
+- 05_modelos_json.md
+- 06_flujo_offline.md
+- 07_catalogos.md
+- 08_motor_reglas.md
+- 09_archivos.md
+- 10_finalizacion.md
+- 11_seguridad.md
+- 14_checklist_frontend.md
+
+## Tecnologías
+
+Usar:
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- Zustand
+- Axios
+- React Hook Form
+- Zod
+- Dexie.js para IndexedDB
+- Vitest
+- Testing Library
+- Playwright
+
+No cambiar estas tecnologías sin autorización.
+
+## Principio principal
+
+El frontend es dinámico.
+
+Está prohibido quemar:
+
+- preguntas
+- opciones
+- secciones
+- textos legales
+- textos de confirmación
+- tooltips
+- reglas
+- catálogos
+- logos
+- colores
+- portadas
+- URLs internas de API
+
+Todo debe venir desde el backend.
+
+## API
+
+Usar siempre:
+
+```ts
+process.env.NEXT_PUBLIC_API_BASE_URL
+
+No escribir URLs completas quemadas en componentes.
+Todos los servicios deben vivir en:
+
+src/services

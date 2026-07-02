@@ -1,0 +1,1 @@
+export { RutaProtegida } from './RutaProtegida';

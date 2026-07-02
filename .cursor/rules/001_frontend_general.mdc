@@ -1,0 +1,69 @@
+---
+description: Regla general obligatoria para desarrollo frontend AppDiversa UI
+alwaysApply: true
+---
+
+# 001 — Regla general Frontend AppDiversa UI
+
+## Contexto obligatorio
+
+Antes de crear, modificar o refactorizar código, revisar:
+
+`D:\C\APPDIVERSA\appdiversa-ui\Contexto`
+
+Archivos clave:
+
+- openapi_export.json
+- 01_arquitectura_frontend_backend.md
+- 02_flujo_completo_aplicacion.md
+- 03_endpoints_publicos.md
+- 04_endpoints_protegidos.md
+- 05_modelos_json.md
+- 06_flujo_offline.md
+- 07_catalogos.md
+- 08_motor_reglas.md
+- 09_archivos.md
+- 10_finalizacion.md
+- 11_seguridad.md
+- 12_swagger.md
+- 13_powerbi.md
+- 14_checklist_frontend.md
+
+## Principio principal
+
+AppDiversa UI es un frontend dinámico para un Motor de Formularios Parametrizable.
+
+Está prohibido quemar en código:
+
+- preguntas
+- opciones
+- secciones
+- textos legales
+- textos de confirmación
+- tooltips
+- reglas
+- catálogos
+- logos
+- colores
+- portadas
+- URLs internas de API
+- formularios específicos
+
+Todo debe provenir del backend.
+
+## Stack autorizado
+
+- Next.js 16
+- React 19
+- TypeScript Strict
+- Tailwind CSS
+- Zustand
+- Axios
+- React Hook Form
+- Zod
+- Dexie.js
+- Vitest
+- React Testing Library
+- Playwright
+
+No cambiar tecnologías sin autorización.

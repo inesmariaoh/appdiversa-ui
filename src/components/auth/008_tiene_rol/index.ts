@@ -1,0 +1,1 @@
+export { TieneRol } from './TieneRol';

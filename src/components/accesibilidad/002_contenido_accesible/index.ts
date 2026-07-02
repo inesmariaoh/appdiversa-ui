@@ -1,0 +1,1 @@
+export { ContenidoAccesiblePregunta } from './ContenidoAccesiblePregunta';

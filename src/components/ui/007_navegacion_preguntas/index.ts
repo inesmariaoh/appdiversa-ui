@@ -1,0 +1,1 @@
+export { NavegacionPreguntas } from './NavegacionPreguntas';

@@ -1,0 +1,1 @@
+export { EditorOpciones } from './EditorOpciones';

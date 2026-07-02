@@ -1,0 +1,116 @@
+/**
+ * Tokens de diseno globales de AppDiversa UI.
+ * Estos valores son el fallback visual; la fuente oficial es /api/v1/interfaz/configuracion/
+ * Los componentes no deben referenciar colores hex directamente, sino estas variables.
+ */
+
+:root {
+  /* Colores de marca (fallback Figma) */
+  --color-primario: #3b2484;
+  --color-primario-hover: #2e1a6e;
+  --color-secundario: #a50034;
+  --color-acento: #00b4a0;
+  --color-acento-hover: #009688;
+
+  /* Fondos */
+  --color-fondo-pagina: #f0f0f0;
+  --color-fondo-tarjeta: #ffffff;
+  --color-fondo-encabezado: #ffffff;
+  --color-fondo-pie: #f0f0f0;
+
+  /* Texto */
+  --color-texto-primario: #2d2d3a;
+  --color-texto-secundario: #4a4a5a;
+  --color-texto-muted: #6b7280;
+  --color-texto-invertido: #ffffff;
+  --color-texto-sobre-primario: #ffffff;
+  --color-texto-sobre-acento: #ffffff;
+
+  /* Estados */
+  --color-error: #e53e3e;
+  --color-error-fondo: #fff5f5;
+  --color-exito: #00b4a0;
+  --color-exito-fondo: #e6fff9;
+  --color-advertencia: #d97706;
+  --color-advertencia-fondo: #fffbeb;
+  --color-deshabilitado: #9ca3af;
+  --color-deshabilitado-fondo: #f3f4f6;
+
+  /* Insignias de tarjeta de encuesta */
+  --color-insignia-disponible-fondo: #1e4d45;
+  --color-insignia-disponible-indicador: #5ce488;
+  --color-fondo-portada-tarjeta: #eef1f4;
+
+  /* Tarjeta de encuesta en portada */
+  --altura-imagen-tarjeta-encuesta: 200px;
+  --altura-contenido-tarjeta-encuesta: 324px;
+  --altura-titulo-tarjeta-encuesta: 3.25rem;
+  --altura-metadatos-tarjeta-encuesta: 1.25rem;
+
+  /* Bordes */
+  --color-borde: #e5e7eb;
+  --color-borde-fuerte: #d1d5db;
+  --color-borde-primario: var(--color-primario);
+  --radio-borde: 8px;
+  --radio-borde-tarjeta: 12px;
+  --radio-borde-boton: 8px;
+
+  /* Espaciado */
+  --espacio-xs: 4px;
+  --espacio-sm: 8px;
+  --espacio-md: 16px;
+  --espacio-lg: 24px;
+  --espacio-xl: 32px;
+  --espacio-2xl: 48px;
+
+  /* Tipografia */
+  --fuente-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --tamano-texto-base: 16px;
+  --tamano-texto-sm: 14px;
+  --tamano-texto-xs: 12px;
+  --tamano-texto-lg: 18px;
+  --tamano-texto-xl: 20px;
+  --tamano-texto-2xl: 24px;
+  --tamano-texto-3xl: 32px;
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-negrita: 700;
+  --altura-linea: 1.6;
+
+  /* Tamanos minimos accesibles */
+  --tamano-control-min: 44px;
+  --tamano-control-preferido: 48px;
+
+  /* Encabezado */
+  --altura-encabezado: 112px;
+  --padding-vertical-encabezado: 16px;
+  --altura-logo-institucional: 72px;
+  --ancho-max-logo-institucional: 360px;
+  --altura-logo-principal: 68px;
+  --ancho-max-logo-principal: 300px;
+  --espacio-logos-encabezado: 20px;
+  --espacio-logo-principal: 16px;
+
+  /* Sombras */
+  --sombra-sm: 0 1px 3px rgb(0 0 0 / 0.08);
+  --sombra-md: 0 4px 12px rgb(0 0 0 / 0.10);
+  --sombra-lg: 0 8px 24px rgb(0 0 0 / 0.12);
+
+  /* Transiciones */
+  --duracion-transicion: 200ms;
+  --curva-transicion: ease-in-out;
+
+  /* Escalado de texto accesible */
+  --escala-texto-normal: 1;
+  --escala-texto-grande: 1.125;
+  --escala-texto-muy-grande: 1.25;
+}
+
+/* Ajuste de tamano de texto segun store de accesibilidad */
+[data-tamano-texto='grande'] {
+  font-size: calc(var(--tamano-texto-base) * var(--escala-texto-grande));
+}
+
+[data-tamano-texto='muy_grande'] {
+  font-size: calc(var(--tamano-texto-base) * var(--escala-texto-muy-grande));
+}

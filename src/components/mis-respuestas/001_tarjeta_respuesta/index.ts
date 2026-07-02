@@ -1,0 +1,1 @@
+export { TarjetaRespuesta } from './TarjetaRespuesta';

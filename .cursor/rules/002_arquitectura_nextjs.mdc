@@ -1,0 +1,50 @@
+---
+description: Arquitectura obligatoria Next.js 16 para AppDiversa UI
+alwaysApply: true
+---
+
+# 002 — Arquitectura Next.js 16
+
+## Estructura base
+
+Usar esta estructura mínima:
+
+```text
+src/
+ ├── app/
+ ├── components/
+ │    ├── layout/
+ │    ├── ui/
+ │    ├── formularios/
+ │    ├── preguntas/
+ │    ├── accesibilidad/
+ │    └── offline/
+ ├── services/
+ ├── store/
+ ├── storage/
+ ├── hooks/
+ ├── types/
+ ├── utils/
+ ├── styles/
+ └── tests/
+```
+
+## App Router
+
+Usar convenciones de Next.js 16.
+
+Si hay rutas dinámicas, respetar el manejo de `params` compatible con Next.js 16.
+
+## Responsabilidades
+
+- `src/app`: rutas y composición de páginas.
+- `src/components`: UI reutilizable.
+- `src/services`: acceso API.
+- `src/store`: Zustand.
+- `src/storage`: IndexedDB/Dexie.
+- `src/hooks`: lógica reutilizable.
+- `src/types`: tipos globales compartidos.
+- `src/utils`: funciones puras.
+- `src/styles`: tokens y estilos globales.
+
+No mezclar lógica de negocio pesada dentro de páginas.

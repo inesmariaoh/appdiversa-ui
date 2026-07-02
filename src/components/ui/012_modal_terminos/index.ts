@@ -1,0 +1,1 @@
+export { ModalTerminos } from './ModalTerminos';

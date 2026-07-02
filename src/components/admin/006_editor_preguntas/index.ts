@@ -1,0 +1,1 @@
+export { EditorPreguntas } from './EditorPreguntas';

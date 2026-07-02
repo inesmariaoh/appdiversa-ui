@@ -1,0 +1,1 @@
+export { ContenedorPagina } from './ContenedorPagina';

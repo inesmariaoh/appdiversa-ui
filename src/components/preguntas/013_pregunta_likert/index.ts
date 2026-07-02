@@ -1,0 +1,1 @@
+export { PreguntaLikert } from './PreguntaLikert';

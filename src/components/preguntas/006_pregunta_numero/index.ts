@@ -1,0 +1,1 @@
+export { PreguntaNumero } from './PreguntaNumero';

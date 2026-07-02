@@ -1,0 +1,28 @@
+services:
+  appdiversa-ui-dev:
+    image: node:22-alpine
+    container_name: appdiversa-ui-dev
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Monta el codigo fuente para hot reload.
+      - .:/app
+      # Evita que el node_modules del host sobreescriba el del contenedor.
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+      API_BASE_URL: ${API_BASE_URL:-http://host.docker.internal:8000}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+      WATCHPACK_POLLING: "true"
+    networks:
+      - appdiversa-network
+
+networks:
+  appdiversa-network:
+    name: appdiversa-network
+    driver: bridge

@@ -1,0 +1,52 @@
+---
+description: Reglas de componentes UI y organización en AppDiversa UI
+alwaysApply: true
+---
+
+# 003 — Componentes UI
+
+## Organización
+
+Cada componente debe tener su propia carpeta.
+
+Usar prefijo numérico:
+
+```text
+001_encabezado/
+002_pie_pagina/
+003_lista_formularios/
+004_tarjeta_formulario/
+```
+
+Cada carpeta debe contener mínimo:
+
+```text
+Componente.tsx
+index.ts
+```
+
+Agregar solo cuando aplique:
+
+```text
+Componente.test.tsx
+hooks.ts
+types.ts
+```
+
+`types.ts` solo para tipos propios del componente.  
+Los tipos compartidos deben vivir en `src/types`.
+
+## Reglas
+
+Los componentes deben ser:
+
+- pequeños
+- reutilizables
+- tipados
+- accesibles
+- testeables
+- sin lógica de negocio pesada
+
+No llamar API directamente desde componentes complejos.
+
+Usar servicios, hooks y stores.

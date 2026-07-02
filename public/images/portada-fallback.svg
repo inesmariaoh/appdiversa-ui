@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="">
+  <rect width="800" height="500" fill="#eef1f4"/>
+  <g fill="#c5cad3" opacity="0.85">
+    <ellipse cx="120" cy="180" rx="38" ry="44"/>
+    <path d="M70 280 Q120 230 170 280 L170 340 L70 340 Z"/>
+    <ellipse cx="280" cy="160" rx="34" ry="40"/>
+    <path d="M235 250 Q280 205 325 250 L325 310 L235 310 Z"/>
+    <ellipse cx="440" cy="190" rx="36" ry="42"/>
+    <path d="M390 285 Q440 240 490 285 L490 350 L390 350 Z"/>
+    <ellipse cx="600" cy="170" rx="32" ry="38"/>
+    <path d="M560 255 Q600 215 640 255 L640 315 L560 315 Z"/>
+    <ellipse cx="720" cy="200" rx="30" ry="36"/>
+    <path d="M685 290 Q720 255 755 290 L755 345 L685 345 Z"/>
+    <ellipse cx="200" cy="320" rx="28" ry="34"/>
+    <path d="M165 395 Q200 360 235 395 L235 440 L165 440 Z"/>
+    <ellipse cx="520" cy="330" rx="30" ry="36"/>
+    <path d="M485 405 Q520 370 555 405 L555 450 L485 450 Z"/>
+    <ellipse cx="360" cy="300" rx="26" ry="32"/>
+    <path d="M330 365 Q360 335 390 365 L390 410 L330 410 Z"/>
+  </g>
+</svg>

@@ -1,0 +1,1 @@
+export { PreguntaPlaceholder } from './PreguntaPlaceholder';

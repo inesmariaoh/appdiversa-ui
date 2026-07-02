@@ -1,0 +1,53 @@
+---
+description: Reglas de consumo API AppDiversa UI
+alwaysApply: true
+---
+
+# 005 — Consumo API
+
+## Variable base
+
+Usar siempre:
+
+```ts
+process.env.NEXT_PUBLIC_API_BASE_URL
+```
+
+Nunca quemar URLs completas.
+
+## Servicios
+
+Todas las llamadas deben estar en:
+
+```text
+src/services
+```
+
+No usar `fetch` ni `axios` directamente en componentes.
+
+## Errores
+
+Todos los errores del backend usan:
+
+```json
+{"detalle": "mensaje funcional"}
+```
+
+Mostrar mensajes funcionales. No mostrar stack traces, SQL, rutas internas ni nombres de excepciones.
+
+## Endpoints
+
+No inventar endpoints. Usar únicamente los documentados en:
+
+- openapi_export.json
+- docs frontend del backend
+
+## Headers permitidos para frontend público
+
+- X-Sesion-Anonima
+- X-Token-Sesion
+
+Nunca usar:
+
+- X-API-INTERNA
+- API_INTERNA_TOKEN

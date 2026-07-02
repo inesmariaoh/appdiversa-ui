@@ -1,0 +1,1 @@
+export { PanelConsentimiento } from './PanelConsentimiento';

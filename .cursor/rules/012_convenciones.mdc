@@ -1,0 +1,43 @@
+---
+description: Convenciones de nombres y organización AppDiversa UI
+alwaysApply: true
+---
+
+# 012 — Convenciones
+
+## Idioma
+
+Usar español sin tildes ni ñ en:
+
+- variables
+- funciones
+- archivos
+- carpetas
+- componentes
+- hooks
+- stores
+- tipos
+
+Ejemplos correctos:
+
+- crearSesionAnonima
+- guardarRespuesta
+- formularioStore
+- PreguntaNumero
+
+Ejemplos prohibidos:
+
+- crearSesiónAnónima
+- guardarRespuestaDiscriminacion
+
+## Reutilización
+
+Toda funcionalidad debe ser reutilizable para cualquier formulario.
+
+Está prohibido implementar soluciones específicas para una encuesta concreta.
+
+## Organización
+
+No crear archivos sueltos sin ubicación clara.
+
+Agrupar por responsabilidad y por sección UI.

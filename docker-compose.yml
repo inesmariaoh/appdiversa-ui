@@ -1,0 +1,36 @@
+services:
+  appdiversa-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # URL del backend Django visible desde el navegador del usuario.
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        API_BASE_URL: ${API_BASE_URL:-http://host.docker.internal:8000}
+    image: appdiversa-ui:latest
+    container_name: appdiversa-ui
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      # SSR dentro del contenedor: backend en la maquina anfitriona (Windows/Mac/Linux).
+      API_BASE_URL: ${API_BASE_URL:-http://host.docker.internal:8000}
+      # Peticiones desde el navegador del usuario hacia Django en localhost.
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    networks:
+      - appdiversa-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  appdiversa-network:
+    name: appdiversa-network
+    driver: bridge

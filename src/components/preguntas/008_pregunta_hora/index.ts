@@ -1,0 +1,1 @@
+export { PreguntaHora } from './PreguntaHora';

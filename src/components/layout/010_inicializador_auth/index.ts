@@ -1,0 +1,1 @@
+export { InicializadorAuth } from './InicializadorAuth';

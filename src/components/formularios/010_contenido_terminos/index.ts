@@ -1,0 +1,1 @@
+export { ContenidoTerminos } from './ContenidoTerminos';

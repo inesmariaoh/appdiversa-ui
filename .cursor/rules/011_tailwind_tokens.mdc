@@ -1,0 +1,35 @@
+---
+description: Reglas Tailwind y tokens dinámicos AppDiversa UI
+alwaysApply: true
+---
+
+# 011 — Tailwind y tokens dinámicos
+
+Usar Tailwind CSS para:
+
+- layout
+- espaciado
+- tipografía
+- responsive
+- composición visual
+
+Los colores y tokens dinámicos del backend deben aplicarse mediante CSS Custom Properties en:
+
+```text
+src/styles/tokens.css
+```
+
+Ejemplos:
+
+- --color-primario
+- --color-secundario
+- --color-acento
+- --tamano-control-min
+
+No quemar colores directamente en JSX ni clases Tailwind.
+
+Los tokens visuales deben provenir de:
+
+- color_primario
+- color_secundario
+- color_acento

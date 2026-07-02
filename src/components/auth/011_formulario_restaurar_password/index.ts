@@ -1,0 +1,1 @@
+export { FormularioRestaurarPassword } from './FormularioRestaurarPassword';

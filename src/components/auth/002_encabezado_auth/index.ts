@@ -1,0 +1,1 @@
+export { EncabezadoAuth } from './EncabezadoAuth';

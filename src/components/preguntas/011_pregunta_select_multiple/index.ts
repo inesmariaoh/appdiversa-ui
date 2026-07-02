@@ -1,0 +1,1 @@
+export { PreguntaSelectMultiple } from './PreguntaSelectMultiple';
