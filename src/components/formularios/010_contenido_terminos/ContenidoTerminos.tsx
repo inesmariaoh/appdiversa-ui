@@ -13,6 +13,9 @@ interface ContenidoTerminosProps {
   readonly mostrarEnlacePublico?: boolean;
   readonly urlPaginaTerminos?: string;
   readonly className?: string;
+  readonly centrarEnlaces?: boolean;
+  /** Centra el contenido completo: parrafos, enlaces y correo. */
+  readonly centrado?: boolean;
 }
 
 export function ContenidoTerminos({
@@ -21,14 +24,21 @@ export function ContenidoTerminos({
   mostrarEnlacePublico = false,
   urlPaginaTerminos = '/terminos-condiciones',
   className = '',
+  centrarEnlaces = false,
+  centrado = false,
 }: ContenidoTerminosProps) {
   const urlLey = textos.url_ley ?? undefined;
   const urlPolitica = textos.url_politica_datos ?? undefined;
+  const claseEnlace = centrado || centrarEnlaces ? 'text-center' : undefined;
+  const claseContenedor = ['text-sm leading-relaxed space-y-4']
+    .concat(centrado ? ['text-center'] : [])
+    .concat(className ? [className] : [])
+    .join(' ');
 
   return (
     <div
       id={idDescripcion}
-      className={`text-sm leading-relaxed space-y-4 ${className}`.trim()}
+      className={claseContenedor}
       style={{ color: 'var(--color-texto-secundario)' }}
     >
       {textos.contenido ? (
@@ -42,7 +52,7 @@ export function ContenidoTerminos({
       )}
 
       {urlLey && (
-        <p>
+        <p className={claseEnlace}>
           <a
             href={urlLey}
             target="_blank"
@@ -56,7 +66,7 @@ export function ContenidoTerminos({
       )}
 
       {urlPolitica && (
-        <p>
+        <p className={claseEnlace}>
           <a
             href={urlPolitica}
             target="_blank"
@@ -84,7 +94,7 @@ export function ContenidoTerminos({
       )}
 
       {mostrarEnlacePublico && (
-        <p>
+        <p className={claseEnlace}>
           <Link
             href={urlPaginaTerminos}
             className="font-semibold underline"

@@ -37,7 +37,6 @@ export function PanelVerificacion(props: PanelVerificacionProps) {
     <ProveedorModalesFormulario
       uuidFormulario={props.uuid}
       rutaActual={`/encuestas/${props.uuid}`}
-      deshabilitado
     >
       <PanelVerificacionContenido {...props} />
     </ProveedorModalesFormulario>
@@ -122,7 +121,7 @@ function PanelVerificacionContenido({
     );
   }
 
-  if (!listo) {
+  if (!listo || flujo.verificandoTerminos || !flujo.terminosAceptados) {
     return <SkeletonFormulario />;
   }
 

@@ -18,13 +18,15 @@ interface ModalProps {
   readonly tamano?: 'sm' | 'md' | 'lg' | 'xl';
   /** Mostrar boton X en la esquina superior. Default: true */
   readonly mostrarBotonCerrar?: boolean;
+  /** Alineacion horizontal del titulo y contenido. Default: 'left' */
+  readonly alineacion?: 'left' | 'center';
 }
 
 const TAMANOS: Record<NonNullable<ModalProps['tamano']>, string> = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
-  xl: 'max-w-3xl',
+  xl: 'max-w-3xl lg:max-w-4xl',
 };
 
 export function Modal({
@@ -35,8 +37,10 @@ export function Modal({
   children,
   tamano = 'md',
   mostrarBotonCerrar = true,
+  alineacion = 'left',
 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const centrado = alineacion === 'center';
   const idTitulo = useId();
   const idDescripcion = useId();
 
@@ -109,7 +113,7 @@ export function Modal({
         {/* Titulo (accesible via aria-labelledby) */}
         <h2
           id={idTitulo}
-          className={`font-bold mb-4 pr-8 ${tamano === 'xl' ? 'text-2xl leading-snug' : 'text-xl'}`}
+          className={`font-bold mb-4 ${centrado ? 'text-center px-8' : 'pr-8'} ${tamano === 'xl' ? 'text-2xl leading-snug' : 'text-xl'}`}
           style={{ color: 'var(--color-texto-primario)' }}
         >
           {titulo}
