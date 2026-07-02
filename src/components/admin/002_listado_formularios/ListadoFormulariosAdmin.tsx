@@ -1,7 +1,8 @@
 'use client';
 
 /**
- * Listado administrativo de formularios con acciones CRUD.
+ * Listado administrativo de formularios con una accion principal para abrir el
+ * asistente guiado y un menu compacto para las acciones secundarias.
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -21,6 +22,8 @@ import { extraerDetalleError } from '@/utils/erroresApi';
 import { PERMISO_FORMULARIOS_EDITAR, PERMISO_FORMULARIOS_PUBLICAR } from '@/types/auth';
 import { useAuthStore } from '@/store/authStore';
 import { ejecutarSinEspera } from '@/utils/ejecutarSinEspera';
+import { EstadoBadge } from './EstadoBadge';
+import { AccionesFormulario } from './AccionesFormulario';
 
 export function ListadoFormulariosAdmin() {
   const router = useRouter();
@@ -35,8 +38,7 @@ export function ListadoFormulariosAdmin() {
     setCargando(true);
     setError(null);
     try {
-      const lista = await listarFormulariosAdmin();
-      setFormularios(lista);
+      setFormularios(await listarFormulariosAdmin());
     } catch (err) {
       setError(extraerDetalleError(err));
     } finally {
@@ -45,36 +47,29 @@ export function ListadoFormulariosAdmin() {
   }, []);
 
   useEffect(() => {
-    let cancelado = false;
     ejecutarSinEspera((async () => {
       await cargar();
-      if (cancelado) return;
     })());
-    return () => {
-      cancelado = true;
-    };
   }, [cargar]);
 
-  async function ejecutarAccion(
-    accion: () => Promise<unknown>,
-    mensajeConfirmacion?: string
-  ) {
-    if (mensajeConfirmacion) {
+  const ejecutarAccion = useCallback(
+    async (accion: () => Promise<unknown>, mensajeConfirmacion: string) => {
       const aceptado = await confirmar({
-        titulo: 'Confirmar acción',
+        titulo: 'Confirmar accion',
         mensaje: mensajeConfirmacion,
         etiquetaConfirmar: 'Confirmar',
         etiquetaCancelar: 'Cancelar',
       });
       if (!aceptado) return;
-    }
-    try {
-      await accion();
-      await cargar();
-    } catch (err) {
-      setError(extraerDetalleError(err));
-    }
-  }
+      try {
+        await accion();
+        await cargar();
+      } catch (err) {
+        setError(extraerDetalleError(err));
+      }
+    },
+    [confirmar, cargar],
+  );
 
   if (cargando) {
     return <p role="status">Cargando formularios...</p>;
@@ -82,19 +77,7 @@ export function ListadoFormulariosAdmin() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <h1
-          className="text-2xl font-bold"
-          style={{ color: 'var(--color-texto-primario)' }}
-        >
-          Formularios
-        </h1>
-        {puedeEditar && (
-          <Link href="/admin/formularios/nuevo">
-            <Boton>Crear formulario</Boton>
-          </Link>
-        )}
-      </div>
+      <Encabezado puedeEditar={puedeEditar} />
 
       {error && (
         <p role="alert" className="mb-4" style={{ color: 'var(--color-error)' }}>
@@ -106,79 +89,62 @@ export function ListadoFormulariosAdmin() {
         <table className="w-full text-sm">
           <thead style={{ backgroundColor: 'var(--color-fondo-pagina)' }}>
             <tr>
-              <th className="text-left p-3 font-semibold">Codigo</th>
-              <th className="text-left p-3 font-semibold">Nombre</th>
-              <th className="text-left p-3 font-semibold">Estado</th>
-              <th className="text-left p-3 font-semibold">Tipo</th>
-              <th className="text-left p-3 font-semibold">Inicio</th>
-              <th className="text-left p-3 font-semibold">Fin</th>
-              <th className="text-left p-3 font-semibold">Version</th>
-              <th className="text-left p-3 font-semibold">Acciones</th>
+              <th className="p-3 text-left font-semibold">Codigo</th>
+              <th className="p-3 text-left font-semibold">Nombre</th>
+              <th className="p-3 text-left font-semibold">Estado</th>
+              <th className="p-3 text-left font-semibold">Tipo</th>
+              <th className="p-3 text-left font-semibold">Vigencia</th>
+              <th className="p-3 text-left font-semibold">Version</th>
+              <th className="p-3 text-left font-semibold">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {formularios.map((formulario) => (
-              <tr
+              <FilaFormulario
                 key={formulario.id}
-                className="border-t"
-                style={{ borderColor: 'var(--color-borde)' }}
-              >
-                <td className="p-3">{formulario.codigo}</td>
-                <td className="p-3">{formulario.nombre}</td>
-                <td className="p-3">
-                  <EstadoBadge estado={formulario.estado} />
-                </td>
-                <td className="p-3">{formulario.tipo_formulario}</td>
-                <td className="p-3">{formulario.fecha_inicio ?? '—'}</td>
-                <td className="p-3">{formulario.fecha_fin ?? '—'}</td>
-                <td className="p-3">{formulario.version_publicada ?? '—'}</td>
-                <td className="p-3">
-                  <AccionesFormulario
-                    formulario={formulario}
-                    puedeEditar={puedeEditar}
-                    puedePublicar={puedePublicar}
-                    onEditar={() => router.push(`/admin/formularios/${formulario.id}/editor`)}
-                    onEstructura={() => router.push(`/admin/formularios/${formulario.id}`)}
-                    onDuplicar={() =>
-                      ejecutarSinEspera(
-                        ejecutarAccion(
-                          () => duplicarFormularioAdmin(formulario.id),
-                          '¿Desea duplicar este formulario?'
-                        )
-                      )
-                    }
-                    onPublicar={() =>
-                      ejecutarSinEspera(
-                        ejecutarAccion(
-                          () => publicarFormularioAdmin(formulario.id),
-                          '¿Desea publicar este formulario?'
-                        )
-                      )
-                    }
-                    onCerrar={() =>
-                      ejecutarSinEspera(
-                        ejecutarAccion(
-                          () => cerrarFormularioAdmin(formulario.id),
-                          '¿Desea cerrar este formulario?'
-                        )
-                      )
-                    }
-                    onEliminar={() =>
-                      ejecutarSinEspera(
-                        ejecutarAccion(
-                          () => eliminarFormularioAdmin(formulario.id),
-                          '¿Desea eliminar lógicamente este formulario?'
-                        )
-                      )
-                    }
-                  />
-                </td>
-              </tr>
+                formulario={formulario}
+                puedeEditar={puedeEditar}
+                puedePublicar={puedePublicar}
+                onAbrir={() => router.push(`/admin/formularios/${formulario.id}/editor`)}
+                onVer={() => router.push(`/admin/formularios/${formulario.id}`)}
+                onDuplicar={() =>
+                  ejecutarSinEspera(
+                    ejecutarAccion(
+                      () => duplicarFormularioAdmin(formulario.id),
+                      'Desea duplicar este formulario?',
+                    ),
+                  )
+                }
+                onPublicar={() =>
+                  ejecutarSinEspera(
+                    ejecutarAccion(
+                      () => publicarFormularioAdmin(formulario.id),
+                      'Desea publicar este formulario?',
+                    ),
+                  )
+                }
+                onCerrar={() =>
+                  ejecutarSinEspera(
+                    ejecutarAccion(
+                      () => cerrarFormularioAdmin(formulario.id),
+                      'Desea cerrar este formulario?',
+                    ),
+                  )
+                }
+                onEliminar={() =>
+                  ejecutarSinEspera(
+                    ejecutarAccion(
+                      () => eliminarFormularioAdmin(formulario.id),
+                      'Desea eliminar logicamente este formulario?',
+                    ),
+                  )
+                }
+              />
             ))}
             {formularios.length === 0 && (
               <tr>
-                <td colSpan={8} className="p-6 text-center" style={{ color: 'var(--color-texto-muted)' }}>
-                  No hay formularios registrados.
+                <td colSpan={7} className="p-6 text-center" style={{ color: 'var(--color-texto-muted)' }}>
+                  Aun no hay formularios. Crea el primero para empezar.
                 </td>
               </tr>
             )}
@@ -189,75 +155,57 @@ export function ListadoFormulariosAdmin() {
   );
 }
 
-function EstadoBadge({ estado }: { estado: string }) {
+function Encabezado({ puedeEditar }: { readonly puedeEditar: boolean }) {
   return (
-    <span
-      className="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize"
-      style={{
-        backgroundColor: 'color-mix(in srgb, var(--color-primario) 10%, transparent)',
-        color: 'var(--color-primario)',
-      }}
-    >
-      {estado}
-    </span>
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h1 className="text-2xl font-bold" style={{ color: 'var(--color-texto-primario)' }}>
+          Formularios
+        </h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--color-texto-muted)' }}>
+          Crea y gestiona tus encuestas paso a paso desde un unico asistente.
+        </p>
+      </div>
+      {puedeEditar && (
+        <Link href="/admin/formularios/nuevo">
+          <Boton>Crear formulario</Boton>
+        </Link>
+      )}
+    </div>
   );
 }
 
-interface AccionesFormularioProps {
+interface FilaFormularioProps {
   readonly formulario: FormularioAdminResumen;
   readonly puedeEditar: boolean;
   readonly puedePublicar: boolean;
-  readonly onEditar: () => void;
-  readonly onEstructura: () => void;
+  readonly onAbrir: () => void;
+  readonly onVer: () => void;
   readonly onDuplicar: () => void;
   readonly onPublicar: () => void;
   readonly onCerrar: () => void;
   readonly onEliminar: () => void;
 }
 
-function AccionesFormulario({
-  puedeEditar,
-  puedePublicar,
-  onEditar,
-  onEstructura,
-  onDuplicar,
-  onPublicar,
-  onCerrar,
-  onEliminar,
-}: AccionesFormularioProps) {
-  if (!puedeEditar && !puedePublicar) {
-    return (
-      <button type="button" className="text-sm underline" onClick={onEstructura}>
-        Ver
-      </button>
-    );
-  }
-
+function FilaFormulario({ formulario, ...acciones }: FilaFormularioProps) {
   return (
-    <div className="flex flex-wrap gap-2">
-      {puedeEditar && (
-        <>
-          <BotonAccion onClick={onEditar} etiqueta="Editar" />
-          <BotonAccion onClick={onDuplicar} etiqueta="Duplicar" />
-          <BotonAccion onClick={onEstructura} etiqueta="Estructura" />
-          <BotonAccion onClick={onCerrar} etiqueta="Cerrar" />
-          <BotonAccion onClick={onEliminar} etiqueta="Eliminar" />
-        </>
-      )}
-      {puedePublicar && <BotonAccion onClick={onPublicar} etiqueta="Publicar" />}
-    </div>
+    <tr className="border-t align-middle" style={{ borderColor: 'var(--color-borde)' }}>
+      <td className="p-3">{formulario.codigo}</td>
+      <td className="p-3 font-medium">{formulario.nombre}</td>
+      <td className="p-3">
+        <EstadoBadge estado={formulario.estado} />
+      </td>
+      <td className="p-3 capitalize">{formulario.tipo_formulario}</td>
+      <td className="p-3">{formatearVigencia(formulario.fecha_inicio, formulario.fecha_fin)}</td>
+      <td className="p-3">{formulario.version_publicada ?? '—'}</td>
+      <td className="p-3">
+        <AccionesFormulario {...acciones} />
+      </td>
+    </tr>
   );
 }
 
-function BotonAccion({ onClick, etiqueta }: { onClick: () => void; etiqueta: string }) {
-  return (
-    <button
-      type="button"
-      className="text-xs px-2 py-1 rounded border"
-      style={{ borderColor: 'var(--color-borde)', color: 'var(--color-primario)' }}
-      onClick={onClick}
-    >
-      {etiqueta}
-    </button>
-  );
+function formatearVigencia(inicio: string | null, fin: string | null): string {
+  if (!inicio && !fin) return '—';
+  return `${inicio ?? '—'} a ${fin ?? '—'}`;
 }

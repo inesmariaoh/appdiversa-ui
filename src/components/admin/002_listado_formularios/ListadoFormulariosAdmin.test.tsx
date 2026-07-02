@@ -91,7 +91,7 @@ describe('ListadoFormulariosAdmin', () => {
     expect(screen.queryByRole('button', { name: 'Editar' })).not.toBeInTheDocument();
   });
 
-  it('editor ve editar pero no publicar', async () => {
+  it('editor ve abrir pero no publicar', async () => {
     useAuthStore.setState({
       permisos: ['formularios.ver', 'formularios.editar'],
     });
@@ -118,7 +118,7 @@ describe('ListadoFormulariosAdmin', () => {
     render(<ListadoFormulariosAdmin />);
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Abrir' })).toBeInTheDocument();
     });
     expect(screen.queryByRole('button', { name: 'Publicar' })).not.toBeInTheDocument();
   });
