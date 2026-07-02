@@ -118,6 +118,7 @@ export function PanelConsentimiento({
         disabled={procesando}
         cargando={procesando}
         aria-label={textoBotonAceptar}
+        style={{ minHeight: '52px', paddingBlock: '1rem' }}
       >
         {textoBotonAceptar}
       </Boton>

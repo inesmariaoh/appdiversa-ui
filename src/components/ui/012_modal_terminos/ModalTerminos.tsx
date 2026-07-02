@@ -43,7 +43,7 @@ export function ModalTerminos({
     >
       <div className="mx-auto flex w-full max-w-md min-h-0 flex-1 flex-col">
         <div
-          className="min-h-0 flex-1 overflow-y-auto mb-5 pr-1 -mr-1"
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden mb-5"
           aria-labelledby="modal-terminos-cuerpo"
         >
           <ContenidoTerminos
