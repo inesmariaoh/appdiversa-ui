@@ -64,7 +64,7 @@ export function Encabezado({
   const estiloLogoInstitucional = {
     height: 'var(--altura-logo-institucional)',
     maxHeight: 'var(--altura-logo-institucional)',
-    maxWidth: 'var(--ancho-max-logo-institucional)',
+    maxWidth: 'min(var(--ancho-max-logo-institucional), 42vw)',
     width: 'auto',
     objectFit: 'contain',
   } as const;
@@ -72,7 +72,7 @@ export function Encabezado({
   const estiloLogoPrincipal = {
     height: 'var(--altura-logo-principal)',
     maxHeight: 'var(--altura-logo-principal)',
-    maxWidth: 'var(--ancho-max-logo-principal)',
+    maxWidth: 'min(var(--ancho-max-logo-principal), 30vw)',
     width: 'auto',
     objectFit: 'contain',
   } as const;

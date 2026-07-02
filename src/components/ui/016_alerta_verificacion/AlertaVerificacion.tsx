@@ -18,7 +18,7 @@ export function AlertaVerificacion({
     <div
       role="status"
       aria-live="polite"
-      className="flex items-start gap-3 rounded-xl px-4 py-3"
+      className="flex flex-col items-center gap-2 rounded-xl px-4 py-3 text-center"
       style={{
         backgroundColor: 'color-mix(in srgb, var(--color-acento) 10%, transparent)',
         border: '1px solid color-mix(in srgb, var(--color-acento) 30%, transparent)',
@@ -54,7 +54,7 @@ function IconoVerificado() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="flex-shrink-0 mt-0.5"
+      className="flex-shrink-0"
     >
       <circle
         cx="12"

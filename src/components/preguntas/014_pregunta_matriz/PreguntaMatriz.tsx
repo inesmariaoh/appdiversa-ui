@@ -7,7 +7,7 @@
  * Escritorio: etiqueta izquierda, opciones en una sola fila horizontal.
  */
 
-import { useId } from 'react';
+import { useId, type CSSProperties } from 'react';
 import { EncabezadoPregunta } from '../005_encabezado_pregunta';
 import type { PropsPregunta } from '../types';
 
@@ -65,15 +65,20 @@ export function PreguntaMatriz({
             >
               {/* Etiqueta de la fila */}
               <span
-                className="sm:max-w-[42%] sm:flex-shrink-0 text-sm font-semibold"
+                className="sm:w-[32%] sm:flex-shrink-0 text-sm font-semibold"
                 style={{ color: 'var(--color-texto-primario)' }}
               >
                 {fila.etiqueta}
               </span>
 
-              {/* Opciones de columna en una sola fila en escritorio */}
+              {/* Opciones de columna alineadas en una cuadrilla de columnas iguales */}
               <div
-                className="sm:flex-1 sm:min-w-0 flex flex-wrap gap-2 sm:flex-nowrap"
+                className="sm:flex-1 sm:min-w-0 grid grid-cols-2 gap-2 sm:[grid-template-columns:var(--matriz-cols)]"
+                style={
+                  {
+                    '--matriz-cols': `repeat(${columnas.length}, minmax(0, 1fr))`,
+                  } as CSSProperties
+                }
                 role="radiogroup"
                 aria-label={`${fila.etiqueta}: seleccione una opción`}
               >
@@ -85,7 +90,7 @@ export function PreguntaMatriz({
                     <label
                       key={col.codigo}
                       htmlFor={idOpcion}
-                      className="flex flex-1 sm:basis-0 items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-2 rounded-lg cursor-pointer text-sm whitespace-nowrap min-w-0 transition-colors"
+                      className="flex items-center justify-center gap-1.5 px-1.5 sm:px-2 py-2 rounded-lg cursor-pointer text-sm text-center leading-tight min-w-0 transition-colors"
                       style={{
                         border: `1.5px solid ${seleccionada ? 'var(--color-primario)' : 'var(--color-borde)'}`,
                         backgroundColor: seleccionada
@@ -125,7 +130,7 @@ export function PreguntaMatriz({
                         )}
                       </span>
 
-                      <span>{col.etiqueta}</span>
+                      <span className="min-w-0">{col.etiqueta}</span>
                     </label>
                   );
                 })}
