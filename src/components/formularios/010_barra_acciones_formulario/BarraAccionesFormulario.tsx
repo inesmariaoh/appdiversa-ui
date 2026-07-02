@@ -16,8 +16,10 @@ import Link from 'next/link';
 import { Boton } from '@/components/ui/001_boton';
 
 interface BarraAccionesFormularioProps {
-  readonly onGuardar: () => void;
+  readonly onGuardar?: () => void;
   readonly guardando?: boolean;
+  /** Muestra el boton "Guardar". Se oculta cuando las respuestas ya estan guardadas. */
+  readonly mostrarGuardar?: boolean;
   readonly urlOtrasEncuestas?: string;
   readonly onEnviarCopia?: () => void;
   readonly enviandoCopia?: boolean;
@@ -32,6 +34,7 @@ interface BarraAccionesFormularioProps {
 export function BarraAccionesFormulario({
   onGuardar,
   guardando = false,
+  mostrarGuardar = true,
   urlOtrasEncuestas = '/',
   onEnviarCopia,
   enviandoCopia = false,
@@ -45,23 +48,25 @@ export function BarraAccionesFormulario({
       className="flex flex-wrap items-center gap-3 pt-4"
       style={{ borderTop: '1px solid var(--color-borde)' }}
     >
-      {/* Guardar — primario */}
-      <Boton
-        type="button"
-        variante="primario"
-        ancho="auto"
-        cargando={guardando}
-        onClick={onGuardar}
-        aria-label={guardando ? 'Guardando respuestas...' : textoGuardar}
-        className="shrink-0 whitespace-nowrap px-6"
-        style={{
-          paddingInline: '1.5rem',
-          paddingBlock: '0.75rem',
-          minWidth: '7.5rem',
-        }}
-      >
-        {textoGuardar}
-      </Boton>
+      {/* Guardar — primario (oculto cuando las respuestas ya estan guardadas) */}
+      {mostrarGuardar && onGuardar && (
+        <Boton
+          type="button"
+          variante="primario"
+          ancho="auto"
+          cargando={guardando}
+          onClick={onGuardar}
+          aria-label={guardando ? 'Guardando respuestas...' : textoGuardar}
+          className="shrink-0 whitespace-nowrap px-6"
+          style={{
+            paddingInline: '1.5rem',
+            paddingBlock: '0.75rem',
+            minWidth: '7.5rem',
+          }}
+        >
+          {textoGuardar}
+        </Boton>
+      )}
 
       {/* Ver otras encuestas — contorno */}
       <Link

@@ -68,7 +68,7 @@ export function TarjetaRespuesta({ sesion }: TarjetaRespuestaProps) {
       </p>
 
       <Link
-        href={`/encuestas/${sesion.uuid_formulario}/resumen?uuid_sesion=${sesion.uuid_sesion}`}
+        href={`/encuestas/${sesion.uuid_formulario}/resumen?uuid_sesion=${sesion.uuid_sesion}&origen=historial`}
         className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-sm font-semibold mt-1 transition-opacity hover:opacity-90"
         style={{
           backgroundColor: 'var(--color-primario)',

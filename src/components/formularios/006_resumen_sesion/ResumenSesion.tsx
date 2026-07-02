@@ -201,6 +201,7 @@ function ResumenSesionContenido({
   const textoVerOtras = textos?.textoVerOtras ?? flujo.textos.modal_guardado.boton_otras;
   const textoEnviarCopia = textos?.textoEnviarCopia ?? 'Enviar copia a mi correo';
   const puedeEnviarCopia = Boolean(credencialesSesion?.tokenCliente);
+  const mostrarGuardar = searchParams.get('origen') !== 'historial';
 
   return (
     <>
@@ -223,15 +224,17 @@ function ResumenSesionContenido({
               Formulario completado
             </p>
           )}
-          <Boton
-            type="button"
-            variante="primario"
-            ancho="auto"
-            className="self-start sm:self-auto"
-            onClick={flujo.ofrecerGuardarProgreso}
-          >
-            {textoGuardar}
-          </Boton>
+          {mostrarGuardar && (
+            <Boton
+              type="button"
+              variante="primario"
+              ancho="auto"
+              className="self-start sm:self-auto"
+              onClick={flujo.ofrecerGuardarProgreso}
+            >
+              {textoGuardar}
+            </Boton>
+          )}
         </header>
 
         <div className="flex flex-col gap-8">
@@ -246,6 +249,7 @@ function ResumenSesionContenido({
 
         <BarraAccionesFormulario
           onGuardar={flujo.ofrecerGuardarProgreso}
+          mostrarGuardar={mostrarGuardar}
           urlOtrasEncuestas="/"
           onEnviarCopia={() => setModalCopiaAbierto(true)}
           puedeCopia={puedeEnviarCopia}
