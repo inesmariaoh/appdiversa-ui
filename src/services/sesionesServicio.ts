@@ -93,12 +93,31 @@ export interface MisRespuestasSalida {
 }
 
 const RUTA_MIS_RESPUESTAS = '/api/v1/auth/mis-respuestas/';
+const RUTA_EXPORTAR_MIS_RESPUESTAS = (uuidSesion: string, formato: string) =>
+  `${RUTA_MIS_RESPUESTAS}${uuidSesion}/exportar/?formato=${formato}`;
+
+export type FormatoDescargaRespuestas = 'pdf' | 'xlsx';
 
 export async function obtenerHistorialSesiones(): Promise<HistorialSesion[]> {
   const respuesta = await apiCliente.get<MisRespuestasSalida>(RUTA_MIS_RESPUESTAS, {
     withCredentials: true,
   });
   return respuesta.data.resultados;
+}
+
+/**
+ * Descarga las respuestas de una sesion propia del usuario autenticado.
+ * GET /api/v1/auth/mis-respuestas/{uuid}/exportar/?formato=pdf|xlsx
+ */
+export async function descargarMisRespuestas(
+  uuidSesion: string,
+  formato: FormatoDescargaRespuestas
+): Promise<Blob> {
+  const respuesta = await apiCliente.get<Blob>(
+    RUTA_EXPORTAR_MIS_RESPUESTAS(uuidSesion, formato),
+    { responseType: 'blob', withCredentials: true }
+  );
+  return respuesta.data;
 }
 
 export async function enviarCopiaRespuestas(

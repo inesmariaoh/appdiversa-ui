@@ -10,6 +10,7 @@ import {
   formatearFechaCompletada,
   resolverFechaDiligenciamientoIso,
 } from '@/utils/resumenRespuestas';
+import { BotonesDescargaRespuestas } from '@/components/mis-respuestas/002_botones_descarga';
 
 interface TarjetaRespuestaProps {
   readonly sesion: HistorialSesion;
@@ -80,6 +81,11 @@ export function TarjetaRespuesta({ sesion }: TarjetaRespuestaProps) {
       >
         Ver resumen
       </Link>
+
+      <BotonesDescargaRespuestas
+        uuidSesion={sesion.uuid_sesion}
+        nombreFormulario={sesion.nombre_formulario}
+      />
     </article>
   );
 }
