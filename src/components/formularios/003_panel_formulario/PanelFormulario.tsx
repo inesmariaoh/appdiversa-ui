@@ -4,7 +4,7 @@
  * Panel principal de diligenciamiento dinamico del formulario.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';
@@ -492,6 +492,22 @@ function PanelFormularioContenido({
   );
   const preguntaActual = preguntasNavegacion[indiceSeguro];
   const esUltima = indiceSeguro >= preguntasNavegacion.length - 1;
+
+  const codigoAnclaRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (codigoAnclaRef.current === null && preguntaActual) {
+      codigoAnclaRef.current = preguntaActual.codigo;
+    }
+  }, [preguntaActual]);
+
+  useEffect(() => {
+    const codigoAncla = codigoAnclaRef.current;
+    if (!codigoAncla) return;
+    const indiceAncla = buscarIndicePregunta(preguntasNavegacion, codigoAncla);
+    if (indiceAncla < 0) return;
+    setIndiceActual((previo) => (indiceAncla === previo ? previo : indiceAncla));
+  }, [preguntasNavegacion]);
   const esGrupoGeografico = preguntaActual
     ? debeMostrarseComoGrupoGeografico(preguntaActual, preguntasVisibles)
     : false;
@@ -655,6 +671,7 @@ function PanelFormularioContenido({
       preguntasVisibles,
     );
     if (indiceDestino === null) return;
+    codigoAnclaRef.current = codigo;
     setIndiceActual(indiceDestino);
     setPendientes([]);
     setErrorGlobal(null);
@@ -702,14 +719,20 @@ function PanelFormularioContenido({
     if (esUltima) {
       await manejarFinalizar();
     } else {
-      setIndiceActual(resolverIndiceDestino());
+      const indiceDestino = resolverIndiceDestino();
+      codigoAnclaRef.current =
+        preguntasNavegacion[indiceDestino]?.codigo ?? codigoAnclaRef.current;
+      setIndiceActual(indiceDestino);
     }
   }
 
   function manejarVolver() {
     setErrorGlobal(null);
     if (indiceSeguro > 0) {
-      setIndiceActual(indiceSeguro - 1);
+      const indiceDestino = indiceSeguro - 1;
+      codigoAnclaRef.current =
+        preguntasNavegacion[indiceDestino]?.codigo ?? codigoAnclaRef.current;
+      setIndiceActual(indiceDestino);
       return;
     }
     flujo.solicitarSalida(`/encuestas/${uuidFormulario}`);
