@@ -6,7 +6,7 @@
 
 import { useCallback, useRef } from 'react';
 import { guardarRespuesta } from '@/services/respuestasServicio';
-import { evaluarReglasPregunta } from '@/services/reglasServicio';
+import { evaluarReglasSesion } from '@/services/reglasServicio';
 import { useSesionStore } from '@/store/sesionStore';
 import { useRespuestasStore } from '@/store/respuestasStore';
 import { useReglasStore } from '@/store/reglasStore';
@@ -102,10 +102,7 @@ export function useGuardarRespuesta() {
       if (salida.reglas) {
         establecerResultadoReglas(salida.reglas);
       } else {
-        const reglas = await evaluarReglasPregunta(
-          { uuidSesion, tokenCliente },
-          pregunta.codigo
-        );
+        const reglas = await evaluarReglasSesion({ uuidSesion, tokenCliente });
         establecerResultadoReglas(reglas);
       }
 

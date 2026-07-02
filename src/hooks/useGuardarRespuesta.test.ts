@@ -5,7 +5,7 @@ import { useSesionStore } from '@/store/sesionStore';
 import { useOfflineStore } from '@/store/offlineStore';
 import { useRespuestasStore } from '@/store/respuestasStore';
 import { guardarRespuesta } from '@/services/respuestasServicio';
-import { evaluarReglasPregunta } from '@/services/reglasServicio';
+import { evaluarReglasSesion } from '@/services/reglasServicio';
 import { RESULTADO_REGLAS_VACIO } from '@/types/reglas';
 import type { Pregunta } from '@/types/formulario';
 
@@ -14,7 +14,7 @@ vi.mock('@/services/respuestasServicio', () => ({
 }));
 
 vi.mock('@/services/reglasServicio', () => ({
-  evaluarReglasPregunta: vi.fn(),
+  evaluarReglasSesion: vi.fn(),
 }));
 
 vi.mock('@/storage/colaSincronizacion', () => ({
@@ -61,7 +61,7 @@ describe('useGuardarRespuesta', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.mocked(guardarRespuesta).mockClear();
-    vi.mocked(evaluarReglasPregunta).mockResolvedValue(RESULTADO_REGLAS_VACIO);
+    vi.mocked(evaluarReglasSesion).mockResolvedValue(RESULTADO_REGLAS_VACIO);
     useSesionStore.getState().establecerSesion({
       uuidSesion: 'sesion-1',
       tokenCliente: 'token-1',
@@ -172,7 +172,7 @@ describe('useGuardarRespuesta', () => {
     expect(useRespuestasStore.getState().obtenerRespuesta('P1')?.valor).toBe('Respaldo');
   });
 
-  it('evalua reglas por pregunta cuando la respuesta no trae reglas', async () => {
+  it('evalua reglas de la sesion cuando la respuesta no trae reglas', async () => {
     vi.mocked(guardarRespuesta).mockResolvedValue({
       uuid_sesion: 'sesion-1',
       codigo_pregunta: 'P1',
@@ -182,7 +182,7 @@ describe('useGuardarRespuesta', () => {
       esta_eliminado: false,
     });
 
-    const { evaluarReglasPregunta: evaluarReglasMock } = await import(
+    const { evaluarReglasSesion: evaluarReglasMock } = await import(
       '@/services/reglasServicio'
     );
     vi.mocked(evaluarReglasMock).mockResolvedValue(RESULTADO_REGLAS_VACIO);

@@ -574,13 +574,13 @@ function PanelFormularioContenido({
     return valoresFormulario[pregunta.codigo] ?? valorInicialPorTipo(pregunta.tipo_pregunta);
   }
 
-  function resolverIndiceDestino(): number {
+  function resolverIndiceDestino(
+    navegacion: typeof preguntasNavegacion,
+    codigoActual: string,
+  ): number {
     const reglas = useReglasStore.getState().resultado;
     if (reglas.saltar_a_pregunta) {
-      const indice = buscarIndicePregunta(
-        preguntasNavegacion,
-        reglas.saltar_a_pregunta
-      );
+      const indice = buscarIndicePregunta(navegacion, reglas.saltar_a_pregunta);
       if (indice >= 0) return indice;
     }
     if (reglas.saltar_a_seccion) {
@@ -589,11 +589,11 @@ function PanelFormularioContenido({
       );
       const codigoPrimera = seccion?.preguntas[0]?.codigo;
       if (codigoPrimera) {
-        const indice = buscarIndicePregunta(preguntasNavegacion, codigoPrimera);
+        const indice = buscarIndicePregunta(navegacion, codigoPrimera);
         if (indice >= 0) return indice;
       }
     }
-    return indiceSeguro + 1;
+    return buscarIndicePregunta(navegacion, codigoActual) + 1;
   }
 
   const manejarCambioGrupo = useCallback(
@@ -716,14 +716,29 @@ function PanelFormularioContenido({
       return;
     }
     if (!(await validarActual())) return;
-    if (esUltima) {
+    if (!preguntaActual) return;
+
+    const codigoActual = preguntaActual.codigo;
+    await flushGuardadosPendientes();
+
+    const reglasFrescas = useReglasStore.getState().resultado;
+    if (reglasFrescas.finalizar_formulario) {
       await manejarFinalizar();
-    } else {
-      const indiceDestino = resolverIndiceDestino();
-      codigoAnclaRef.current =
-        preguntasNavegacion[indiceDestino]?.codigo ?? codigoAnclaRef.current;
-      setIndiceActual(indiceDestino);
+      return;
     }
+    const navegacionFresca = listarPreguntasNavegacion(
+      estructura.secciones,
+      reglasFrescas,
+    );
+    const indiceActualFresco = buscarIndicePregunta(navegacionFresca, codigoActual);
+    if (indiceActualFresco >= navegacionFresca.length - 1) {
+      await manejarFinalizar();
+      return;
+    }
+    const indiceDestino = resolverIndiceDestino(navegacionFresca, codigoActual);
+    codigoAnclaRef.current =
+      navegacionFresca[indiceDestino]?.codigo ?? codigoAnclaRef.current;
+    setIndiceActual(indiceDestino);
   }
 
   function manejarVolver() {
