@@ -112,7 +112,7 @@ describe('useFlujoPreguntasFiltro', () => {
     expect(valido).toBe(false);
     expect(result.current.mostrarModalNoElegible).toBe(true);
     expect(result.current.textosNoElegible.cuerpo).toContain(
-      'preguntas de verificación inicial',
+      'Gracias por tu interés',
     );
     expect(result.current.textosNoElegible.cuerpo).toContain('No cumples condiciones.');
   });

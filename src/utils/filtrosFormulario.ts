@@ -271,7 +271,7 @@ export function esResultadoCumplido(
 export const TITULO_MODAL_NO_ELEGIBLE_PREDETERMINADO = 'No es posible continuar';
 
 export const CUERPO_MODAL_NO_ELEGIBLE_PREDETERMINADO =
-  'No es posible continuar con esta encuesta porque no cumples con alguna de las preguntas de verificación inicial.';
+  'Gracias por tu interés en diligenciar esta encuesta. De acuerdo con tus respuestas, en esta ocasión no cumples con los requisitos para participar. Te invitamos a revisar otras encuestas que se adapten a tu perfil.';
 
 function normalizarTextoComparacion(texto: string): string {
   return texto.trim().replace(/\s+/g, ' ').toLowerCase();
