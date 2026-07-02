@@ -1,6 +1,7 @@
 /**
- * Pagina de registro: disponible por invitacion de administradores.
- * Keycloak queda documentado como integracion futura.
+ * Pagina de registro publico: cualquier persona puede crear una cuenta normal.
+ * Los roles administrativos no se asignan en el autorregistro; se otorgan aparte.
+ * Keycloak queda como integracion social opcional.
  */
 
 import { ContenedorPagina } from '@/components/layout/003_contenedor_pagina';
@@ -8,11 +9,13 @@ import { VentanaAuth } from '@/components/auth/001_ventana_auth';
 import { EncabezadoAuth } from '@/components/auth/002_encabezado_auth';
 import { BotonSocial, IconoGoogle, IconoFacebook } from '@/components/auth/003_boton_social';
 import { EnlaceCambioModo } from '@/components/auth/005_enlace_cambio_modo';
+import { FormularioRegistroCorreo } from './correo/FormularioRegistroCorreo';
 import { obtenerConfiguracionInterfaz } from '@/services/interfazServicio';
 import { obtenerIdiomaServidor } from '@/utils/obtenerIdiomaServidor';
 
 const URL_GOOGLE = process.env.NEXT_PUBLIC_KEYCLOAK_GOOGLE_URL?.trim() ?? '';
 const URL_FACEBOOK = process.env.NEXT_PUBLIC_KEYCLOAK_FACEBOOK_URL?.trim() ?? '';
+const URL_TERMINOS = process.env.NEXT_PUBLIC_URL_TERMINOS?.trim() ?? '#';
 
 export default async function PaginaRegistro() {
   const idioma = await obtenerIdiomaServidor();
@@ -24,26 +27,14 @@ export default async function PaginaRegistro() {
       <div className="flex justify-center py-10 px-4">
         <VentanaAuth>
           <EncabezadoAuth
-            titulo="Registro de usuario"
+            titulo="Crea tu cuenta"
             subtitulo={configuracion.descripcion_aplicativo || undefined}
           />
-
-          <div
-            className="p-4 rounded-lg mb-6 text-sm"
-            role="status"
-            style={{
-              backgroundColor: 'color-mix(in srgb, var(--color-primario) 8%, transparent)',
-              color: 'var(--color-texto-primario)',
-            }}
-          >
-            Registro disponible para administradores por invitación.
-            Las encuestas públicas pueden diligenciarse sin registro ni inicio de sesión.
-          </div>
 
           {keycloakConfigurado && (
             <>
               <p className="text-xs mb-3" style={{ color: 'var(--color-texto-muted)' }}>
-                Integración con proveedor de identidad (Keycloak) — versión futura:
+                Regístrate con un proveedor de identidad:
               </p>
               <div className="flex flex-col gap-3 mb-5">
                 {URL_GOOGLE && (
@@ -63,6 +54,8 @@ export default async function PaginaRegistro() {
               </div>
             </>
           )}
+
+          <FormularioRegistroCorreo urlTerminos={URL_TERMINOS} />
 
           <EnlaceCambioModo
             texto="¿Ya tienes cuenta?"

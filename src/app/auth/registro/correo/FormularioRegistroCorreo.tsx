@@ -9,12 +9,15 @@ import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CampoTexto } from '@/components/ui/008_campo_texto';
 import { CampoContrasena } from '@/components/ui/009_campo_contrasena';
 import { registrarCorreo } from '@/services/authServicio';
+import { ErrorApi } from '@/utils/erroresApi';
+
+const RUTA_REGISTRO_EXITOSO = '/auth/login?registro=exitoso';
+const MENSAJE_ERROR_REGISTRO = 'No fue posible crear la cuenta. Intenta nuevamente.';
 
 const esquema = z.object({
   correo: z
@@ -32,27 +35,6 @@ type Datos = z.infer<typeof esquema>;
 
 interface FormularioRegistroCorreoProps {
   readonly urlTerminos: string;
-}
-
-function aplicarErroresCampoRegistro(
-  cuerpo: Record<string, unknown>,
-  setError: (campo: keyof Datos, error: { message: string }) => void,
-): boolean {
-  let huboErrorCampo = false;
-
-  const erroresCorreo = cuerpo.correo;
-  if (Array.isArray(erroresCorreo) && typeof erroresCorreo[0] === 'string') {
-    setError('correo', { message: erroresCorreo[0] });
-    huboErrorCampo = true;
-  }
-
-  const erroresContrasena = cuerpo.contrasena;
-  if (Array.isArray(erroresContrasena) && typeof erroresContrasena[0] === 'string') {
-    setError('contrasena', { message: erroresContrasena[0] });
-    huboErrorCampo = true;
-  }
-
-  return huboErrorCampo;
 }
 
 export function FormularioRegistroCorreo({ urlTerminos }: FormularioRegistroCorreoProps) {
@@ -75,17 +57,11 @@ export function FormularioRegistroCorreo({ urlTerminos }: FormularioRegistroCorr
           correo: datos.correo,
           contrasena: datos.contrasena,
         });
-        router.push('/auth/verificar-correo');
+        router.push(RUTA_REGISTRO_EXITOSO);
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.data) {
-          const cuerpo = error.response.data as Record<string, unknown>;
-          const huboErrorCampo = aplicarErroresCampoRegistro(cuerpo, setError);
-          if (!huboErrorCampo) {
-            setError('correo', { message: 'Error al crear la cuenta. Intenta nuevamente.' });
-          }
-          return;
-        }
-        setError('correo', { message: 'Error de red. Verifica tu conexión.' });
+        const mensaje =
+          error instanceof ErrorApi ? error.detalle : MENSAJE_ERROR_REGISTRO;
+        setError('correo', { message: mensaje });
       }
     },
     [router, setError],
@@ -136,7 +112,7 @@ export function FormularioRegistroCorreo({ urlTerminos }: FormularioRegistroCorr
         type="submit"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
-        className="w-full py-3 px-4 rounded-lg text-sm font-semibold transition-opacity"
+        className="w-full min-h-[52px] py-4 px-6 rounded-lg text-sm font-semibold transition-opacity inline-flex items-center justify-center"
         style={{
           backgroundColor: 'var(--color-primario)',
           color: '#ffffff',
