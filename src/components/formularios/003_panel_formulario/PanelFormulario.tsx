@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { AvisoConexionOffline } from '@/components/offline/003_aviso_conexion_offline';
-import { EstadoSincronizacion } from '@/components/offline/002_estado_sincronizacion';
 import { TextosLegales } from '@/components/formularios/004_textos_legales';
 import { ListaPendientes } from '@/components/formularios/005_lista_pendientes';
 import { PantallaEnvioExitoso } from '@/components/formularios/009_pantalla_envio_exitoso';
@@ -60,6 +59,7 @@ import {
   construirValoresIniciales,
   respuestaPermiteContinuar,
 } from '@/utils/validacionPregunta';
+import { faltaTextoOtroObligatorio } from '@/utils/interaccionOpciones';
 import { construirEsquemaFormulario } from '@/utils/esquemaFormularioZod';
 import { debeBloquearFormularioOffline } from '@/utils/bloqueoOffline';
 import {
@@ -716,9 +716,13 @@ function PanelFormularioContenido({
   }
 
   const codigoPreguntaActual = preguntaActual?.codigo ?? '';
-  const observacionActual = useRespuestasStore(
-    (estado) => estado.respuestas[codigoPreguntaActual]?.observacion ?? '',
-  );
+  const respuestasPorCodigo = useRespuestasStore((estado) => estado.respuestas);
+  const observacionActual =
+    respuestasPorCodigo[codigoPreguntaActual]?.observacion ?? '';
+
+  function observacionDePregunta(codigo: string): string {
+    return respuestasPorCodigo[codigo]?.observacion ?? '';
+  }
 
   const vistaIntermedia = renderEstadoIntermedioPanel({
     errorSesion,
@@ -757,15 +761,23 @@ function PanelFormularioContenido({
   );
 
   const valorActual = valorRespuesta(preguntaActual);
-  const puedeContinuar =
-    !deshabilitada &&
-    camposGrupoActual.every((campo) =>
-      respuestaPermiteContinuar(
-        campo,
-        valorRespuesta(campo),
-        obtenerObligatoriaPregunta(campo),
-      ),
+
+  function campoPermiteContinuar(campo: NonNullable<typeof preguntaActual>): boolean {
+    const valor = valorRespuesta(campo);
+    if (
+      !respuestaPermiteContinuar(campo, valor, obtenerObligatoriaPregunta(campo))
+    ) {
+      return false;
+    }
+    return !faltaTextoOtroObligatorio(
+      campo,
+      valor,
+      observacionDePregunta(campo.codigo),
     );
+  }
+
+  const puedeContinuar =
+    !deshabilitada && camposGrupoActual.every(campoPermiteContinuar);
 
   const textoContinuar =
     esUltima || resultadoReglas.finalizar_formulario ? 'Finalizar' : 'Continuar';
@@ -793,8 +805,6 @@ function PanelFormularioContenido({
 
       <AvisoConexionOffline />
 
-      <EstadoSincronizacion />
-
       <AnuncioReglas resultado={resultadoReglas} />
 
       {resultadoReglas.mensajes.length > 0 && (
@@ -813,7 +823,11 @@ function PanelFormularioContenido({
         </div>
       )}
 
-      <ListaPendientes pendientes={pendientes} onSeleccionar={irAPreguntaPendiente} />
+      <ListaPendientes
+        pendientes={pendientes}
+        onSeleccionar={irAPreguntaPendiente}
+        numeroPorCodigo={numeracionVisual}
+      />
 
       <BarraProgreso
         preguntaActual={indiceSeguro + 1}
