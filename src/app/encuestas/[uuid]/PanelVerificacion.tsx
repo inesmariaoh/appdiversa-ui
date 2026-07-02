@@ -10,6 +10,7 @@ import { NavegacionPreguntas } from '@/components/ui/007_navegacion_preguntas';
 import { SkeletonFormulario } from '@/components/ui/004_skeleton';
 import { RenderizadorPregunta } from '@/components/preguntas/000_renderizador_pregunta';
 import { PreguntaFechaNacimiento } from '@/components/preguntas/022_pregunta_fecha_nacimiento';
+import { PreguntaGrupoGeografico } from '@/components/preguntas/020_pregunta_grupo_catalogo';
 import { PanelConsentimiento } from '@/components/formularios/008_panel_consentimiento';
 import { ModalNoCumpleCondiciones } from '@/components/formularios/013_modal_no_cumple_condiciones';
 import {
@@ -66,14 +67,16 @@ function PanelVerificacionContenido({
   });
 
   async function guardarPreguntaActual(): Promise<boolean> {
-    const pregunta = flujoFiltro.preguntaActual;
-    if (!pregunta) {
+    const preguntasPaso = flujoFiltro.preguntasPasoActual;
+    if (preguntasPaso.length === 0) {
       return false;
     }
     setGuardando(true);
     setErrorGlobal(null);
     try {
-      await guardarInmediato(pregunta, flujoFiltro.respuestas[pregunta.codigo]);
+      for (const pregunta of preguntasPaso) {
+        await guardarInmediato(pregunta, flujoFiltro.respuestas[pregunta.codigo]);
+      }
       return true;
     } catch {
       setErrorGlobal('No fue posible guardar la respuesta de verificación.');
@@ -151,6 +154,52 @@ function PanelVerificacionContenido({
   const preguntaVisual = preguntaConNumeroVisual(preguntaActual, numeroVisual);
   const valorActual = flujoFiltro.respuestas[preguntaActual.codigo];
 
+  function renderizarContenidoPaso() {
+    if (flujoFiltro.esGrupoGeograficoActual) {
+      return (
+        <PreguntaGrupoGeografico
+          preguntaRaiz={preguntaVisual}
+          preguntasFormulario={preguntasFiltro}
+          valores={flujoFiltro.respuestas}
+          onCambioGrupo={(cambios) =>
+            cambios.forEach((cambio) =>
+              flujoFiltro.actualizarRespuesta(cambio.codigo, cambio.valor),
+            )
+          }
+          obtenerObligatoria={(pregunta) => pregunta.es_obligatoria}
+          obtenerError={(codigo) => flujoFiltro.errores[codigo]}
+        />
+      );
+    }
+    if (flujoFiltro.esPreguntaFechaNacimiento(preguntaActual)) {
+      return (
+        <PreguntaFechaNacimiento
+          pregunta={preguntaVisual}
+          valor={valorActual}
+          numeroVisual={numeroVisual}
+          onCambio={(valor) =>
+            flujoFiltro.actualizarRespuesta(preguntaActual.codigo, valor)
+          }
+          obligatoria={preguntaActual.es_obligatoria}
+          errorExterno={flujoFiltro.errores[preguntaActual.codigo]}
+        />
+      );
+    }
+    return (
+      <RenderizadorPregunta
+        pregunta={preguntaVisual}
+        valor={valorActual}
+        onCambio={(valor) =>
+          flujoFiltro.actualizarRespuesta(preguntaActual.codigo, valor)
+        }
+        obligatoria={preguntaActual.es_obligatoria}
+        error={flujoFiltro.errores[preguntaActual.codigo]}
+        idPrefijo={preguntaActual.codigo}
+        respuestasFormulario={flujoFiltro.respuestas}
+      />
+    );
+  }
+
   return (
     <>
       <div
@@ -168,30 +217,7 @@ function PanelVerificacionContenido({
         </div>
 
         <div className="mb-8">
-          {flujoFiltro.esPreguntaFechaNacimiento(preguntaActual) ? (
-            <PreguntaFechaNacimiento
-              pregunta={preguntaVisual}
-              valor={valorActual}
-              numeroVisual={numeroVisual}
-              onCambio={(valor) =>
-                flujoFiltro.actualizarRespuesta(preguntaActual.codigo, valor)
-              }
-              obligatoria={preguntaActual.es_obligatoria}
-              errorExterno={flujoFiltro.errores[preguntaActual.codigo]}
-            />
-          ) : (
-            <RenderizadorPregunta
-              pregunta={preguntaVisual}
-              valor={valorActual}
-              onCambio={(valor) =>
-                flujoFiltro.actualizarRespuesta(preguntaActual.codigo, valor)
-              }
-              obligatoria={preguntaActual.es_obligatoria}
-              error={flujoFiltro.errores[preguntaActual.codigo]}
-              idPrefijo={preguntaActual.codigo}
-              respuestasFormulario={flujoFiltro.respuestas}
-            />
-          )}
+          {renderizarContenidoPaso()}
         </div>
 
         {errorGlobal && (

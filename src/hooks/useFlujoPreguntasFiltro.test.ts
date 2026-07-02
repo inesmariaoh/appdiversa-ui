@@ -162,4 +162,87 @@ describe('useFlujoPreguntasFiltro', () => {
     expect(result.current.fase).toBe('verificacion_exitosa');
     expect(result.current.textosVerificacion.titulo).toBe('¡Verificado con éxito!');
   });
+
+  function crearFiltrosGeograficos(): Pregunta[] {
+    return [
+      crearPregunta('P1', {
+        tipo_pregunta: 'fecha',
+        tipo_validacion_filtro: 'rango_edad',
+        valor_minimo: '18',
+        valor_maximo: '109',
+      }),
+      crearPregunta('P3', {
+        orden: 3,
+        tipo_pregunta: 'select',
+        usa_catalogo: true,
+        es_pregunta_geografica: true,
+        catalogo_asociado: { codigo: 'departamentos', tipo_catalogo: 'jerarquico' },
+        fuente_opciones: 'catalogo',
+      }),
+      crearPregunta('P3-MUN', {
+        orden: 4,
+        tipo_pregunta: 'select',
+        usa_catalogo: true,
+        es_pregunta_geografica: true,
+        catalogo_asociado: { codigo: 'municipios', tipo_catalogo: 'jerarquico' },
+        pregunta_padre_catalogo: { codigo: 'P3' },
+        fuente_opciones: 'catalogo',
+      }),
+    ];
+  }
+
+  function avanzarAlPasoGeografico(
+    result: { current: ReturnType<typeof useFlujoPreguntasFiltro> },
+  ) {
+    act(() => {
+      result.current.actualizarRespuesta('P1', { anio: '1990', mes: '5', dia: '10' });
+    });
+    act(() => {
+      result.current.continuarFlujo();
+    });
+  }
+
+  it('agrupa departamento y municipio en un solo paso con numeracion comprimida', () => {
+    const { result } = renderHook(() =>
+      useFlujoPreguntasFiltro({
+        preguntasFiltro: crearFiltrosGeograficos(),
+        estructura: estructuraMinima,
+      }),
+    );
+
+    expect(result.current.totalPreguntas).toBe(2);
+
+    avanzarAlPasoGeografico(result);
+
+    expect(result.current.preguntaActual?.codigo).toBe('P3');
+    expect(result.current.esGrupoGeograficoActual).toBe(true);
+    expect(result.current.preguntasPasoActual.map((p) => p.codigo)).toEqual([
+      'P3',
+      'P3-MUN',
+    ]);
+    expect(result.current.esUltima).toBe(true);
+  });
+
+  it('exige departamento y municipio para continuar el paso geografico', () => {
+    const { result } = renderHook(() =>
+      useFlujoPreguntasFiltro({
+        preguntasFiltro: crearFiltrosGeograficos(),
+        estructura: estructuraMinima,
+      }),
+    );
+
+    avanzarAlPasoGeografico(result);
+
+    expect(result.current.puedeContinuarActual).toBe(false);
+
+    act(() => {
+      result.current.actualizarRespuesta('P3', '05');
+    });
+    expect(result.current.puedeContinuarActual).toBe(false);
+
+    act(() => {
+      result.current.actualizarRespuesta('P3-MUN', '05001');
+    });
+    expect(result.current.puedeContinuarActual).toBe(true);
+  });
 });

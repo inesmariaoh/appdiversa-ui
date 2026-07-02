@@ -19,9 +19,93 @@ import {
   TITULO_MODAL_NO_ELEGIBLE_PREDETERMINADO,
   todasFiltrosCumplen,
 } from '@/utils/filtrosFormulario';
+import {
+  debeMostrarseComoGrupoGeografico,
+  esSubpreguntaGeograficaEnGrupo,
+  obtenerCamposGrupoGeografico,
+} from '@/utils/preguntasCatalogoAgrupadas';
 import { contenidoTextoFormulario, tituloTextoFormulario } from '@/utils/textosFormulario';
-import { validarRespuestaPregunta } from '@/utils/validacionPregunta';
-import { valorInicialPorTipo } from '@/utils/validacionPregunta';
+import { validarRespuestaPregunta, valorInicialPorTipo } from '@/utils/validacionPregunta';
+
+const TIPO_PREGUNTA_RADIO = 'radio';
+
+interface ResultadoValidacionGrupo {
+  readonly errores: Record<string, string>;
+  readonly mensajeNoElegible: string | null;
+  readonly valido: boolean;
+}
+
+/**
+ * Determina si un campo del grupo permite habilitar el boton continuar.
+ */
+function campoPermiteContinuar(pregunta: Pregunta, valor: unknown): boolean {
+  const errorBasico = validarRespuestaPregunta(
+    pregunta,
+    valor,
+    pregunta.es_obligatoria,
+  );
+  if (errorBasico) {
+    return false;
+  }
+  const resultado = evaluarPreguntaFiltro(pregunta, valor);
+  if (esResultadoNoCumplido(resultado) && resultado.bloqueaContinuacion) {
+    return pregunta.tipo_pregunta === TIPO_PREGUNTA_RADIO;
+  }
+  return true;
+}
+
+/**
+ * Valida todos los campos de un paso, que puede agrupar preguntas geograficas.
+ */
+function validarCamposDelPaso(
+  preguntas: Pregunta[],
+  respuestas: Record<string, unknown>,
+): ResultadoValidacionGrupo {
+  const errores: Record<string, string> = {};
+  let mensajeNoElegible: string | null = null;
+
+  for (const pregunta of preguntas) {
+    const valor = respuestas[pregunta.codigo];
+    const errorBasico = validarRespuestaPregunta(
+      pregunta,
+      valor,
+      pregunta.es_obligatoria,
+    );
+    if (errorBasico) {
+      errores[pregunta.codigo] = errorBasico;
+      continue;
+    }
+    const resultado = evaluarPreguntaFiltro(pregunta, valor);
+    if (!esResultadoNoCumplido(resultado)) {
+      continue;
+    }
+    if (pregunta.tipo_pregunta === TIPO_PREGUNTA_RADIO && resultado.bloqueaContinuacion) {
+      mensajeNoElegible = resultado.mensaje;
+    } else {
+      errores[pregunta.codigo] = resultado.mensaje;
+    }
+  }
+
+  return {
+    errores,
+    mensajeNoElegible,
+    valido: Object.keys(errores).length === 0 && mensajeNoElegible === null,
+  };
+}
+
+/**
+ * Elimina del mapa de errores las claves de las preguntas indicadas.
+ */
+function limpiarErroresDelPaso(
+  errores: Record<string, string>,
+  preguntas: Pregunta[],
+): Record<string, string> {
+  const siguientes = { ...errores };
+  for (const pregunta of preguntas) {
+    delete siguientes[pregunta.codigo];
+  }
+  return siguientes;
+}
 
 interface UseFlujoPreguntasFiltroOpciones {
   readonly preguntasFiltro: Pregunta[];
@@ -46,8 +130,34 @@ export function useFlujoPreguntasFiltro({
   );
   const [errores, setErrores] = useState<Record<string, string>>({});
 
-  const preguntaActual = preguntasFiltro[indiceActual];
-  const esUltima = indiceActual >= preguntasFiltro.length - 1;
+  const preguntasNavegacion = useMemo(
+    () =>
+      preguntasFiltro.filter(
+        (pregunta) => !esSubpreguntaGeograficaEnGrupo(pregunta, preguntasFiltro),
+      ),
+    [preguntasFiltro],
+  );
+
+  const preguntaActual = preguntasNavegacion[indiceActual];
+  const esUltima = indiceActual >= preguntasNavegacion.length - 1;
+
+  const preguntasPasoActual = useMemo(() => {
+    if (!preguntaActual) {
+      return [];
+    }
+    if (debeMostrarseComoGrupoGeografico(preguntaActual, preguntasFiltro)) {
+      return obtenerCamposGrupoGeografico(preguntaActual, preguntasFiltro);
+    }
+    return [preguntaActual];
+  }, [preguntaActual, preguntasFiltro]);
+
+  const esGrupoGeograficoActual = useMemo(
+    () =>
+      preguntaActual
+        ? debeMostrarseComoGrupoGeografico(preguntaActual, preguntasFiltro)
+        : false,
+    [preguntaActual, preguntasFiltro],
+  );
 
   const textosNoElegible: TextosModalNoElegible = useMemo(
     () => ({
@@ -93,67 +203,28 @@ export function useFlujoPreguntasFiltro({
     if (!preguntaActual) {
       return false;
     }
-    const valor = respuestas[preguntaActual.codigo];
-    const errorBasico = validarRespuestaPregunta(
-      preguntaActual,
-      valor,
-      preguntaActual.es_obligatoria,
+    return preguntasPasoActual.every((pregunta) =>
+      campoPermiteContinuar(pregunta, respuestas[pregunta.codigo]),
     );
-    if (errorBasico) {
-      return false;
-    }
-    const resultadoFiltro = evaluarPreguntaFiltro(preguntaActual, valor);
-    if (esResultadoNoCumplido(resultadoFiltro) && resultadoFiltro.bloqueaContinuacion) {
-      if (preguntaActual.tipo_pregunta === 'radio') {
-        return true;
-      }
-      return false;
-    }
-    return true;
-  }, [preguntaActual, respuestas]);
+  }, [preguntaActual, preguntasPasoActual, respuestas]);
 
   const validarPreguntaActual = useCallback((): boolean => {
     if (!preguntaActual) {
       return true;
     }
-    const valor = respuestas[preguntaActual.codigo];
-    const errorBasico = validarRespuestaPregunta(
-      preguntaActual,
-      valor,
-      preguntaActual.es_obligatoria,
-    );
-    if (errorBasico) {
-      setErrores((previos) => ({
-        ...previos,
-        [preguntaActual.codigo]: errorBasico,
-      }));
+    const resultado = validarCamposDelPaso(preguntasPasoActual, respuestas);
+    if (resultado.mensajeNoElegible) {
+      setMensajeNoElegible(resultado.mensajeNoElegible);
+      setMostrarModalNoElegible(true);
       return false;
     }
-
-    const resultadoFiltro = evaluarPreguntaFiltro(preguntaActual, valor);
-    if (esResultadoNoCumplido(resultadoFiltro)) {
-      if (
-        preguntaActual.tipo_pregunta === 'radio' &&
-        resultadoFiltro.bloqueaContinuacion
-      ) {
-        setMensajeNoElegible(resultadoFiltro.mensaje);
-        setMostrarModalNoElegible(true);
-        return false;
-      }
-      setErrores((previos) => ({
-        ...previos,
-        [preguntaActual.codigo]: resultadoFiltro.mensaje,
-      }));
+    if (!resultado.valido) {
+      setErrores((previos) => ({ ...previos, ...resultado.errores }));
       return false;
     }
-
-    setErrores((previos) => {
-      const siguientes = { ...previos };
-      delete siguientes[preguntaActual.codigo];
-      return siguientes;
-    });
+    setErrores((previos) => limpiarErroresDelPaso(previos, preguntasPasoActual));
     return true;
-  }, [preguntaActual, respuestas]);
+  }, [preguntaActual, preguntasPasoActual, respuestas]);
 
   const continuarFlujo = useCallback(() => {
     if (esUltima) {
@@ -214,6 +285,8 @@ export function useFlujoPreguntasFiltro({
     fase,
     indiceActual,
     preguntaActual,
+    preguntasPasoActual,
+    esGrupoGeograficoActual,
     esUltima,
     respuestas,
     errores,
@@ -227,6 +300,6 @@ export function useFlujoPreguntasFiltro({
     retroceder,
     cerrarModalNoElegible,
     esPreguntaFechaNacimiento,
-    totalPreguntas: preguntasFiltro.length,
+    totalPreguntas: preguntasNavegacion.length,
   };
 }
