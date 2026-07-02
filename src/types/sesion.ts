@@ -36,6 +36,10 @@ export interface PreguntaPendiente {
   seccion_codigo: string;
   seccion_titulo: string;
   orden: number;
+  /** Motivo tecnico por el que la pregunta quedo pendiente. */
+  motivo?: string;
+  /** Mensaje legible entregado por el backend segun el motivo. */
+  mensaje?: string;
 }
 
 export interface FinalizacionFormulario {

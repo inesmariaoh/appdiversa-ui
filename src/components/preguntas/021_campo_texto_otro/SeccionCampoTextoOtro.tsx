@@ -5,7 +5,10 @@
  */
 
 import type { OpcionRespuesta, Pregunta } from '@/types/formulario';
-import { debeMostrarCampoTextoOtro } from '@/utils/interaccionOpciones';
+import {
+  debeMostrarCampoTextoOtro,
+  preguntaExigeTextoOtro,
+} from '@/utils/interaccionOpciones';
 import { CampoTextoOtro } from '../021_campo_texto_otro';
 
 interface SeccionCampoTextoOtroProps {
@@ -34,12 +37,15 @@ export function SeccionCampoTextoOtro({
     return null;
   }
 
+  const obligatorio = preguntaExigeTextoOtro(pregunta.comportamiento_interaccion);
+
   return (
     <CampoTextoOtro
       id={idPrefijo}
       valor={observacion}
       onCambio={onCambioObservacion}
       deshabilitada={deshabilitada}
+      obligatorio={obligatorio}
     />
   );
 }

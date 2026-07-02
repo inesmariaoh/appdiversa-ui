@@ -2,12 +2,17 @@
  * Constantes y utilidades de interaccion de opciones enviadas por el backend.
  */
 
-import type { ComportamientoInteraccion, OpcionRespuesta } from '@/types/formulario';
+import type {
+  ComportamientoInteraccion,
+  OpcionRespuesta,
+  Pregunta,
+} from '@/types/formulario';
 
 export const ACCION_MOSTRAR_CAMPO_TEXTO = 'mostrar_campo_texto';
 export const ACCION_EXCLUIR_OTRAS_OPCIONES = 'excluir_otras_opciones';
 
 export const MODO_CAMPO_TEXTO_OPCIONAL = 'opcional';
+export const MODO_CAMPO_TEXTO_OBLIGATORIO = 'obligatorio';
 export const MODO_EXCLUSION_DESELECCIONAR_OTRAS = 'deseleccionar_otras_al_seleccionar';
 
 function normalizarValores(valor: unknown): string[] {
@@ -34,6 +39,12 @@ export function preguntaPermiteCampoTextoOtro(
   comportamiento?: ComportamientoInteraccion,
 ): boolean {
   return comportamiento?.campo_texto_otro === MODO_CAMPO_TEXTO_OPCIONAL;
+}
+
+export function preguntaExigeTextoOtro(
+  comportamiento?: ComportamientoInteraccion,
+): boolean {
+  return comportamiento?.campo_texto_otro === MODO_CAMPO_TEXTO_OBLIGATORIO;
 }
 
 export function preguntaUsaExclusionOpciones(
@@ -99,6 +110,20 @@ export function debeMostrarCampoTextoOtro(
     (opcion) =>
       seleccionados.includes(opcion.valor) && opcionRequiereCampoTexto(opcion),
   );
+}
+
+export function faltaTextoOtroObligatorio(
+  pregunta: Pregunta,
+  valor: unknown,
+  observacion: string,
+): boolean {
+  if (!preguntaExigeTextoOtro(pregunta.comportamiento_interaccion)) {
+    return false;
+  }
+  if (!debeMostrarCampoTextoOtro(valor, pregunta.opciones)) {
+    return false;
+  }
+  return observacion.trim() === '';
 }
 
 export function debeLimpiarObservacion(

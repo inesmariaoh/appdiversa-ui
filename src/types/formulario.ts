@@ -118,7 +118,7 @@ export interface PreguntaDependienteGeografica {
 
 export interface ComportamientoInteraccion {
   tipo_seleccion: 'multiple' | 'unica' | 'no_aplica';
-  campo_texto_otro: 'opcional' | 'ninguno';
+  campo_texto_otro: 'opcional' | 'obligatorio' | 'ninguno';
   modo_exclusion?: 'deseleccionar_otras_al_seleccionar';
 }
 

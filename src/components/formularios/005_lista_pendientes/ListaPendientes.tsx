@@ -9,9 +9,24 @@ import type { PreguntaPendiente } from '@/types/sesion';
 interface ListaPendientesProps {
   readonly pendientes: PreguntaPendiente[];
   readonly onSeleccionar: (codigo: string) => void;
+  /** Numero visual (Pregunta N de M) por codigo de pregunta. */
+  readonly numeroPorCodigo?: Map<string, number>;
 }
 
-export function ListaPendientes({ pendientes, onSeleccionar }: ListaPendientesProps) {
+function construirEtiquetaPendiente(
+  pendiente: PreguntaPendiente,
+  numero?: number,
+): string {
+  const prefijo = numero ? `Pregunta ${numero}` : pendiente.seccion_titulo;
+  const detalle = pendiente.mensaje?.trim() || pendiente.texto;
+  return `${prefijo}: ${detalle}`;
+}
+
+export function ListaPendientes({
+  pendientes,
+  onSeleccionar,
+  numeroPorCodigo,
+}: ListaPendientesProps) {
   if (pendientes.length === 0) return null;
 
   return (
@@ -35,7 +50,7 @@ export function ListaPendientes({ pendientes, onSeleccionar }: ListaPendientesPr
               style={{ color: 'var(--color-texto-primario)' }}
               onClick={() => onSeleccionar(item.codigo)}
             >
-              {item.seccion_titulo}: {item.texto}
+              {construirEtiquetaPendiente(item, numeroPorCodigo?.get(item.codigo))}
             </button>
           </li>
         ))}
