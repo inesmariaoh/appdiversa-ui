@@ -51,7 +51,7 @@ export function ModalTerminos({
             idDescripcion={idCuerpo}
             mostrarEnlacePublico
             urlPaginaTerminos={urlPaginaTerminos}
-            className="text-sm leading-6 space-y-4 sm:text-base sm:leading-7 sm:space-y-5"
+            className="text-xs leading-5 space-y-3 sm:text-sm sm:leading-6 sm:space-y-4"
             centrado
           />
         </div>

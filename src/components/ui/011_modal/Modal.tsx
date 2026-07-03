@@ -90,7 +90,7 @@ export function Modal({
         open
         aria-labelledby={idTitulo}
         aria-describedby={descripcion ? idDescripcion : undefined}
-        className={`relative w-full ${TAMANOS[tamano]} max-h-[92svh] sm:max-h-[90dvh] flex flex-col rounded-2xl border-0 p-4 sm:p-8 shadow-2xl m-0`}
+        className={`relative w-full ${TAMANOS[tamano]} max-h-[80svh] sm:max-h-[90dvh] flex flex-col rounded-2xl border-0 p-4 sm:p-8 shadow-2xl m-0`}
         style={{ backgroundColor: 'var(--color-fondo-tarjeta)' }}
       >
         {/* Boton cerrar (X) */}
