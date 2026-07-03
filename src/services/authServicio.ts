@@ -30,6 +30,10 @@ const RUTA_REENVIAR_VERIFICACION = '/api/v1/auth/reenviar-verificacion/';
 
 const CONFIG_SESION = { withCredentials: true };
 
+// El registro puede tardar mas por el arranque en frio del backend en la nube.
+const TIEMPO_ESPERA_REGISTRO_MS = 45000;
+const CONFIG_REGISTRO = { timeout: TIEMPO_ESPERA_REGISTRO_MS };
+
 export async function iniciarSesion(entrada: LoginEntrada): Promise<PerfilAutenticado> {
   const respuesta = await apiCliente.post<PerfilAutenticado>(
     RUTA_LOGIN,
@@ -49,6 +53,7 @@ export async function registrarCorreo(
   const respuesta = await apiCliente.post<RespuestaDetalle>(
     RUTA_REGISTRO_CORREO,
     entrada,
+    CONFIG_REGISTRO,
   );
   return respuesta.data;
 }

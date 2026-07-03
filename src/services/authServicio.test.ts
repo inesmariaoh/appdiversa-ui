@@ -68,10 +68,14 @@ describe('authServicio', () => {
       contrasena: 'Secreta123',
     });
 
-    expect(apiCliente.post).toHaveBeenCalledWith('/api/v1/auth/registro/correo/', {
-      correo: 'usuario@correo.com',
-      contrasena: 'Secreta123',
-    });
+    expect(apiCliente.post).toHaveBeenCalledWith(
+      '/api/v1/auth/registro/correo/',
+      {
+        correo: 'usuario@correo.com',
+        contrasena: 'Secreta123',
+      },
+      { timeout: 45000 },
+    );
     expect(resultado.detalle).toContain('Revisa tu correo');
   });
 
