@@ -34,6 +34,7 @@ export function FormularioLogin() {
   const uuidSesionParam = searchParams.get('uuid_sesion');
   const tokenClienteParam = searchParams.get('token_cliente');
   const uuidFormularioParam = searchParams.get('uuid_formulario');
+  const registroExitoso = searchParams.get('registro') === 'exitoso';
 
   const iniciarSesion = useAuthStore((s) => s.iniciarSesion);
   const cargando = useAuthStore((s) => s.cargando);
@@ -96,6 +97,20 @@ export function FormularioLogin() {
       noValidate
       aria-label="Formulario de inicio de sesión"
     >
+      {registroExitoso && (
+        <output
+          className="block text-sm mb-4 p-3 rounded-lg"
+          style={{
+            color: 'var(--color-acento)',
+            backgroundColor: 'var(--color-fondo-pagina)',
+            border: '1px solid var(--color-borde)',
+          }}
+        >
+          Tu cuenta se creó correctamente. Revisa tu correo para verificar la cuenta e
+          inicia sesión.
+        </output>
+      )}
+
       <div className="flex flex-col gap-4 mb-1">
         <CampoTexto
           etiqueta="Correo electrónico o número de celular o usuario"

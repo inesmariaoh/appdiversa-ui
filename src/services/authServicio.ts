@@ -24,6 +24,8 @@ const RUTA_PERFIL = '/api/v1/auth/perfil/';
 const RUTA_CAMBIAR_PASSWORD = '/api/v1/auth/cambiar-password/';
 const RUTA_SOLICITAR_RESTAURAR_PASSWORD = '/api/v1/auth/solicitar-restaurar-password/';
 const RUTA_RESTAURAR_PASSWORD = '/api/v1/auth/restaurar-password/';
+const RUTA_VERIFICAR_CORREO = '/api/v1/auth/verificar-correo/';
+const RUTA_REENVIAR_VERIFICACION = '/api/v1/auth/reenviar-verificacion/';
 
 const CONFIG_SESION = { withCredentials: true };
 
@@ -99,6 +101,27 @@ export async function restaurarPassword(
   const respuesta = await apiCliente.post<RespuestaDetalle>(
     RUTA_RESTAURAR_PASSWORD,
     payload
+  );
+  return respuesta.data;
+}
+
+export async function verificarCorreo(
+  uid: string,
+  token: string
+): Promise<RespuestaDetalle> {
+  const respuesta = await apiCliente.post<RespuestaDetalle>(
+    RUTA_VERIFICAR_CORREO,
+    { uid, token }
+  );
+  return respuesta.data;
+}
+
+export async function reenviarVerificacion(
+  email: string
+): Promise<RespuestaDetalle> {
+  const respuesta = await apiCliente.post<RespuestaDetalle>(
+    RUTA_REENVIAR_VERIFICACION,
+    { email }
   );
   return respuesta.data;
 }
