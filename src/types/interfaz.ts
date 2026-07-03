@@ -115,6 +115,18 @@ export interface AccesibilidadServidor {
   lengua_senas_habilitada: boolean;
   fuente_dislexia_habilitada: boolean;
   tema_por_defecto: TemaAccesibilidad;
+  centro_relevo_habilitado: boolean;
+  url_centro_relevo: string;
+}
+
+/**
+ * Datos de accesibilidad editables desde el panel administrativo
+ * (GET/PATCH /api/v1/interfaz/admin/accesibilidad/). Incluye, ademas de las
+ * banderas publicas, la URL y el texto del video en lengua de senas.
+ */
+export interface AccesibilidadAdminDatos extends AccesibilidadServidor {
+  url_lengua_senas: string;
+  texto_lengua_senas: string;
 }
 
 export interface AccesibilidadConfig {

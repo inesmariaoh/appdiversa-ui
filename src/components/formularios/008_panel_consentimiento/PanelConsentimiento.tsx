@@ -16,7 +16,9 @@ import Link from 'next/link';
 import { AlertaVerificacion } from '@/components/ui/016_alerta_verificacion';
 import { ContenidoHtml } from '@/components/ui/005_contenido_html';
 import { Boton } from '@/components/ui/001_boton';
+import { LectorTexto } from '@/components/accesibilidad/003_lector_voz';
 import { buscarTextoFormulario } from '@/utils/textosFormulario';
+import { htmlATextoPlano } from '@/utils/textoPlano';
 import type { FormularioEstructura } from '@/types/formulario';
 
 interface PanelConsentimientoProps {
@@ -63,6 +65,16 @@ export function PanelConsentimiento({
     buscarTextoFormulario(estructura, 'autorizacion_datos') ??
     buscarTextoFormulario(estructura, 'consentimiento_datos');
 
+  const textoLectura = [
+    tituloBanner,
+    descBanner,
+    textoAutorizacion?.contenido ? htmlATextoPlano(textoAutorizacion.contenido) : '',
+    `Al continuar aceptas nuestros ${textoEnlaceTerminos}`,
+    textoBotonAceptar,
+  ]
+    .filter((parte) => parte.trim())
+    .join('. ');
+
   return (
     <div
       className="rounded-2xl p-6 sm:p-8 flex flex-col gap-6"
@@ -71,6 +83,8 @@ export function PanelConsentimiento({
         boxShadow: 'var(--sombra-md)',
       }}
     >
+      <LectorTexto texto={textoLectura} className="self-start" />
+
       {/* Banner verificacion */}
       <AlertaVerificacion titulo={tituloBanner} descripcion={descBanner} />
 

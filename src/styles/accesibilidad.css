@@ -117,6 +117,32 @@ html[data-fuente-dislexia='true'] textarea {
 }
 
 /* --- Panel de lengua de senas ---------------------------- */
+.boton-lengua-senas {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-xs, 6px);
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  background-color: transparent;
+  border: 1px solid var(--color-primario);
+  border-radius: var(--radio-borde, 6px);
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+}
+
+.boton-lengua-senas:hover,
+.boton-lengua-senas:focus-visible {
+  color: var(--color-texto-invertido, #ffffff);
+  background-color: var(--color-primario);
+}
+
+.boton-lengua-senas-icono {
+  display: inline-flex;
+  align-items: center;
+}
+
 .panel-lengua-senas {
   position: fixed;
   inset: 0;

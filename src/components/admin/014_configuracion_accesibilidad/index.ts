@@ -1,0 +1,1 @@
+export { ConfiguracionAccesibilidadAdmin } from './ConfiguracionAccesibilidadAdmin';

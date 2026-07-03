@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import { ContenedorPagina } from '@/components/layout/003_contenedor_pagina';
 import { Migas } from '@/components/layout/004_migas';
 import { AvisoEncuestaProximamente } from '@/components/formularios/012_aviso_encuesta_proximamente';
+import { BloqueLenguaSenas } from '@/components/accesibilidad/004_lengua_senas';
 import { EncuestaResponderCliente } from './EncuestaResponderCliente';
 import {
   obtenerEstructuraConCache,
@@ -78,6 +79,7 @@ export default async function PaginaResponder({ params }: PaginaResponderProps) 
             {estructura.introduccion}
           </p>
         )}
+        <BloqueLenguaSenas />
         <EncuestaResponderCliente
           uuidFormulario={uuid}
           estructura={estructura}

@@ -4,6 +4,7 @@
  */
 
 import type {
+  AccesibilidadServidor,
   CodigoLogoInterfaz,
   ConfiguracionInterfaz,
   LogoInterfaz,
@@ -16,6 +17,25 @@ import {
 import { apiCliente } from './api';
 
 const RUTA_CONFIGURACION = '/api/v1/interfaz/configuracion/';
+
+const ACCESIBILIDAD_FALLBACK: AccesibilidadServidor = {
+  lectura_voz_habilitada: true,
+  comandos_voz_habilitada: false,
+  lengua_senas_habilitada: false,
+  fuente_dislexia_habilitada: false,
+  tema_por_defecto: 'claro',
+  centro_relevo_habilitado: false,
+  url_centro_relevo: '',
+};
+
+function normalizarAccesibilidad(
+  valor: Partial<AccesibilidadServidor> | undefined
+): AccesibilidadServidor {
+  if (!valor) {
+    return { ...ACCESIBILIDAD_FALLBACK };
+  }
+  return { ...ACCESIBILIDAD_FALLBACK, ...valor };
+}
 
 const CONFIGURACION_FALLBACK: ConfiguracionInterfaz = {
   nombre_aplicativo: 'Divers App',
@@ -170,6 +190,7 @@ function normalizarConfiguracion(
       data.texto_titulo_seccion_encuestas?.trim() || null,
     texto_descripcion_seccion_encuestas:
       data.texto_descripcion_seccion_encuestas?.trim() || null,
+    accesibilidad: normalizarAccesibilidad(data.accesibilidad),
   };
 
   const parametrosFlujo: ParametrosResolverFlujoFormulario = {

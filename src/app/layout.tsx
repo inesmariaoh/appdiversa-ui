@@ -47,6 +47,13 @@ export default async function RootLayout({
               fuenteDislexiaHabilitada={
                 configuracion.accesibilidad?.fuente_dislexia_habilitada
               }
+              centroRelevoHabilitado={
+                configuracion.accesibilidad?.centro_relevo_habilitado
+              }
+              urlCentroRelevo={configuracion.accesibilidad?.url_centro_relevo}
+              lecturaVozHabilitada={
+                configuracion.accesibilidad?.lectura_voz_habilitada
+              }
             />
 
             <EncabezadoConTema />

@@ -6,6 +6,7 @@
 
 import { EncabezadoPregunta } from '../005_encabezado_pregunta';
 import { RenderizadorPregunta } from '../000_renderizador_pregunta';
+import { LectorPregunta } from '@/components/accesibilidad/003_lector_voz';
 import type { Pregunta } from '@/types/formulario';
 import {
   obtenerCamposGrupoGeografico,
@@ -60,6 +61,7 @@ export function PreguntaGrupoGeografico({
 
   return (
     <div className="flex flex-col gap-4 w-full">
+      <LectorPregunta pregunta={preguntaRaiz} campos={campos} />
       <EncabezadoPregunta
         orden={preguntaRaiz.orden}
         texto={preguntaRaiz.texto}

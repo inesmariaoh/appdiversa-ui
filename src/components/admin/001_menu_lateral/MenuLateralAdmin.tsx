@@ -27,13 +27,8 @@ const ITEMS_MENU: ItemMenu[] = [
     href: '/admin/usuarios',
   },
   { etiqueta: 'Catálogos', href: '/admin/catalogos' },
+  { etiqueta: 'Configuración', href: '/admin/configuracion' },
   { etiqueta: 'Analítica', href: '/admin/analitica', futuro: true, deshabilitado: true },
-  {
-    etiqueta: 'Configuración',
-    href: '/admin/configuracion',
-    futuro: true,
-    deshabilitado: true,
-  },
 ];
 
 export function MenuLateralAdmin() {
@@ -61,7 +56,11 @@ export function MenuLateralAdmin() {
   }, [abierto]);
 
   const itemsVisibles = ITEMS_MENU.filter((item) => {
-    if (item.href === '/admin/usuarios' || item.href === '/admin/catalogos') {
+    if (
+      item.href === '/admin/usuarios' ||
+      item.href === '/admin/catalogos' ||
+      item.href === '/admin/configuracion'
+    ) {
       return esAdministrador();
     }
     if (item.href === '/admin/formularios') {

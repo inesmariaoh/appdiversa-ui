@@ -9,6 +9,7 @@ import {
   PreguntaFecha,
   type ValorFecha,
 } from '@/components/preguntas/001_pregunta_fecha';
+import { LectorPregunta } from '@/components/accesibilidad/003_lector_voz';
 import type { Pregunta } from '@/types/formulario';
 import {
   evaluarPreguntaFiltro,
@@ -64,6 +65,7 @@ export function PreguntaFechaNacimiento({
 
   return (
     <div className="flex flex-col gap-2">
+      <LectorPregunta pregunta={pregunta} />
       <PreguntaFecha
         idPregunta={pregunta.codigo}
         texto={pregunta.texto}

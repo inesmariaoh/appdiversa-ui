@@ -28,7 +28,7 @@ describe('MenuLateralAdmin', () => {
     expect(screen.getByText('Catálogos')).toBeInTheDocument();
     expect(screen.getByText('Analítica')).toBeInTheDocument();
     expect(screen.getByText('Configuración')).toBeInTheDocument();
-    expect(screen.getAllByText('(próximamente)').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('(próximamente)').length).toBeGreaterThanOrEqual(1);
   });
 
   it('expone aria-label del menu con tilde', () => {

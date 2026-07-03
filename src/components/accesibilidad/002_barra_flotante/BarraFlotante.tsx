@@ -10,20 +10,32 @@
 
 import { useEffect } from 'react';
 import { useAccesibilidadStore } from '@/store/accesibilidadStore';
+import { useLectorVoz } from '@/hooks/useLectorVoz';
+import { extraerTextoLegible } from '@/utils/extraerTextoDom';
 
 interface BarraFlotanteProps {
   readonly lenguaSenasHabilitada?: boolean;
   readonly urlLenguaSenas?: string | null;
   readonly textoLenguaSenas?: string | null;
   readonly fuenteDislexiaHabilitada?: boolean;
+  readonly centroRelevoHabilitado?: boolean;
+  readonly urlCentroRelevo?: string | null;
+  readonly lecturaVozHabilitada?: boolean;
 }
+
+const ETIQUETA_CENTRO_RELEVO = 'Centro de Relevo';
+const ID_CONTENIDO_PRINCIPAL = 'contenido-principal';
 
 export function BarraFlotante({
   lenguaSenasHabilitada = false,
   urlLenguaSenas = null,
   textoLenguaSenas = 'Lengua de señas',
   fuenteDislexiaHabilitada = false,
+  centroRelevoHabilitado = false,
+  urlCentroRelevo = null,
+  lecturaVozHabilitada = false,
 }: BarraFlotanteProps) {
+  const { soportado: vozSoportada, hablando, leer, detener } = useLectorVoz();
   const {
     alto_contraste,
     tamano_texto,
@@ -65,17 +77,58 @@ export function BarraFlotante({
     );
   }, [reducir_animaciones]);
 
+  function manejarEscucharPagina() {
+    if (hablando) {
+      detener();
+      return;
+    }
+    const principal = document.getElementById(ID_CONTENIDO_PRINCIPAL);
+    if (!principal) {
+      return;
+    }
+    leer(extraerTextoLegible(principal));
+  }
+
+  const mostrarEscuchar = lecturaVozHabilitada && vozSoportada;
+
   function manejarLenguaSenas() {
     if (lenguaSenasHabilitada && urlLenguaSenas) {
       window.open(urlLenguaSenas, '_blank', 'noopener,noreferrer');
     }
   }
 
+  function manejarCentroRelevo() {
+    if (centroRelevoHabilitado && urlCentroRelevo) {
+      window.open(urlCentroRelevo, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  const mostrarCentroRelevo = centroRelevoHabilitado && Boolean(urlCentroRelevo);
+
   return (
     <nav
       className="barra-flotante"
       aria-label="Herramientas de accesibilidad"
     >
+      {/* Escuchar contenido de la pagina */}
+      {mostrarEscuchar && (
+        <button
+          type="button"
+          className="barra-flotante-btn"
+          onClick={manejarEscucharPagina}
+          aria-pressed={hablando}
+          aria-label={hablando ? 'Detener lectura' : 'Escuchar contenido de la página'}
+          title={hablando ? 'Detener lectura' : 'Escuchar contenido'}
+        >
+          <span className="barra-flotante-texto">
+            {hablando ? 'Detener lectura' : 'Escuchar'}
+          </span>
+          <span className="barra-flotante-icono" aria-hidden="true">
+            <IconoAltavoz activo={hablando} />
+          </span>
+        </button>
+      )}
+
       {/* Alto contraste */}
       <button
         type="button"
@@ -199,7 +252,50 @@ export function BarraFlotante({
           </button>
         </>
       )}
+
+      {/* Centro de Relevo — solo si la API lo habilita */}
+      {mostrarCentroRelevo && (
+        <button
+          type="button"
+          className="barra-flotante-btn"
+          onClick={manejarCentroRelevo}
+          aria-label={`${ETIQUETA_CENTRO_RELEVO} (abre en una nueva pestaña)`}
+          title={ETIQUETA_CENTRO_RELEVO}
+        >
+          <span className="barra-flotante-texto">{ETIQUETA_CENTRO_RELEVO}</span>
+          <span className="barra-flotante-icono" aria-hidden="true">
+            <IconoRelevo />
+          </span>
+        </button>
+      )}
     </nav>
+  );
+}
+
+function IconoAltavoz({ activo }: { readonly activo: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 5 6 9H2v6h4l5 4z" />
+      {activo ? (
+        <>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </>
+      ) : (
+        <path d="M16 9l6 6M22 9l-6 6" />
+      )}
+    </svg>
+  );
+}
+
+function IconoRelevo() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12a8 8 0 0 1 13.66-5.66L20 8" />
+      <path d="M20 4v4h-4" />
+      <path d="M20 12a8 8 0 0 1-13.66 5.66L4 16" />
+      <path d="M4 20v-4h4" />
+    </svg>
   );
 }
 

@@ -9,7 +9,12 @@
 import { useLectorVoz } from '@/hooks/useLectorVoz';
 
 interface BotonEscucharProps {
-  readonly texto: string;
+  readonly texto?: string;
+  /**
+   * Alternativa a `texto`: funcion que calcula el texto al pulsar el boton.
+   * Util para leer contenido dinamico del DOM (p. ej. una card o un modal).
+   */
+  readonly obtenerTexto?: () => string;
   readonly idioma?: string;
   readonly etiqueta?: string;
   readonly etiquetaDetener?: string;
@@ -18,6 +23,7 @@ interface BotonEscucharProps {
 
 export function BotonEscuchar({
   texto,
+  obtenerTexto,
   idioma,
   etiqueta = 'Escuchar',
   etiquetaDetener = 'Detener lectura',
@@ -36,12 +42,14 @@ export function BotonEscuchar({
       detener();
       return;
     }
-    leer(texto, { idioma });
+    const contenido = (obtenerTexto ? obtenerTexto() : texto) ?? '';
+    leer(contenido, { idioma });
   }
 
   return (
     <button
       type="button"
+      data-no-leer
       className={className}
       onClick={manejarClic}
       aria-pressed={hablando}

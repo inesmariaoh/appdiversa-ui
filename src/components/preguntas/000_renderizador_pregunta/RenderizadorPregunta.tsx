@@ -27,6 +27,7 @@ import { PreguntaVideo } from '../019_pregunta_video';
 import { PreguntaUbicacionGeografica } from '../021_pregunta_ubicacion_geografica';
 import { PreguntaPlaceholder } from '../099_pregunta_placeholder';
 import { ContenidoAccesiblePregunta } from '@/components/accesibilidad/002_contenido_accesible';
+import { LectorPregunta } from '@/components/accesibilidad/003_lector_voz';
 import type { PropsPregunta } from '../types';
 import type { TipoPregunta } from '@/types/formulario';
 import type { ComponentType } from 'react';
@@ -95,6 +96,7 @@ export function RenderizadorPregunta(props: PropsPregunta) {
 
   return (
     <>
+      {!props.modoSubcampo && <LectorPregunta pregunta={props.pregunta} />}
       {contenido}
       <ContenidoAccesiblePregunta contenido={props.pregunta.contenido_accesible} />
     </>
