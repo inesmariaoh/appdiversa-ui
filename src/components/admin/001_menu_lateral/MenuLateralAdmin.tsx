@@ -26,7 +26,7 @@ const ITEMS_MENU: ItemMenu[] = [
     etiqueta: 'Usuarios',
     href: '/admin/usuarios',
   },
-  { etiqueta: 'Catálogos', href: '/admin/catalogos', futuro: true, deshabilitado: true },
+  { etiqueta: 'Catálogos', href: '/admin/catalogos' },
   { etiqueta: 'Analítica', href: '/admin/analitica', futuro: true, deshabilitado: true },
   {
     etiqueta: 'Configuración',
@@ -61,7 +61,7 @@ export function MenuLateralAdmin() {
   }, [abierto]);
 
   const itemsVisibles = ITEMS_MENU.filter((item) => {
-    if (item.href === '/admin/usuarios') {
+    if (item.href === '/admin/usuarios' || item.href === '/admin/catalogos') {
       return esAdministrador();
     }
     if (item.href === '/admin/formularios') {

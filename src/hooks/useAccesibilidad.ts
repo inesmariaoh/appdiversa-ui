@@ -10,26 +10,53 @@ import { useEffect } from 'react';
 import { useAccesibilidadStore } from '@/store/accesibilidadStore';
 
 export function useAccesibilidad() {
-  const { alto_contraste, tamano_texto, reducir_animaciones } =
-    useAccesibilidadStore();
+  const {
+    alto_contraste,
+    tamano_texto,
+    reducir_animaciones,
+    tema,
+    fuente_dislexia,
+    lectura_facil,
+  } = useAccesibilidadStore();
 
   useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-alto-contraste',
-      alto_contraste ? 'true' : 'false'
-    );
+    document.documentElement.dataset.altoContraste = alto_contraste
+      ? 'true'
+      : 'false';
   }, [alto_contraste]);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-tamano-texto', tamano_texto);
+    document.documentElement.dataset.tamanoTexto = tamano_texto;
   }, [tamano_texto]);
 
   useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-reducir-animaciones',
-      reducir_animaciones ? 'true' : 'false'
-    );
+    document.documentElement.dataset.reducirAnimaciones = reducir_animaciones
+      ? 'true'
+      : 'false';
   }, [reducir_animaciones]);
 
-  return { alto_contraste, tamano_texto, reducir_animaciones };
+  useEffect(() => {
+    document.documentElement.dataset.tema = tema;
+  }, [tema]);
+
+  useEffect(() => {
+    document.documentElement.dataset.fuenteDislexia = fuente_dislexia
+      ? 'true'
+      : 'false';
+  }, [fuente_dislexia]);
+
+  useEffect(() => {
+    document.documentElement.dataset.lecturaFacil = lectura_facil
+      ? 'true'
+      : 'false';
+  }, [lectura_facil]);
+
+  return {
+    alto_contraste,
+    tamano_texto,
+    reducir_animaciones,
+    tema,
+    fuente_dislexia,
+    lectura_facil,
+  };
 }

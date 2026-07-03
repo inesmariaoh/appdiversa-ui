@@ -98,12 +98,32 @@ export interface ConfiguracionInterfaz {
   flujo_formulario?: FlujoFormularioInterfaz;
   /** true cuando flujo_formulario proviene de fallback local. */
   flujo_formulario_es_fallback?: boolean;
+  /** Banderas de accesibilidad parametrizadas desde el backend. */
+  accesibilidad?: AccesibilidadServidor;
+}
+
+export type TemaAccesibilidad = 'claro' | 'oscuro' | 'alto_contraste';
+
+/**
+ * Banderas de accesibilidad parametrizadas desde el backend
+ * (GET /api/v1/interfaz/configuracion/ -> bloque "accesibilidad").
+ * Permiten activar o desactivar funcionalidades sin nuevos despliegues.
+ */
+export interface AccesibilidadServidor {
+  lectura_voz_habilitada: boolean;
+  comandos_voz_habilitada: boolean;
+  lengua_senas_habilitada: boolean;
+  fuente_dislexia_habilitada: boolean;
+  tema_por_defecto: TemaAccesibilidad;
 }
 
 export interface AccesibilidadConfig {
   alto_contraste: boolean;
   tamano_texto: 'normal' | 'grande' | 'muy_grande';
   reducir_animaciones: boolean;
+  tema: TemaAccesibilidad;
+  fuente_dislexia: boolean;
+  lectura_facil: boolean;
 }
 
 export type CodigoLogoInterfaz =

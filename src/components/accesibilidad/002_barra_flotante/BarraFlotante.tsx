@@ -15,30 +15,37 @@ interface BarraFlotanteProps {
   readonly lenguaSenasHabilitada?: boolean;
   readonly urlLenguaSenas?: string | null;
   readonly textoLenguaSenas?: string | null;
+  readonly fuenteDislexiaHabilitada?: boolean;
 }
 
 export function BarraFlotante({
   lenguaSenasHabilitada = false,
   urlLenguaSenas = null,
   textoLenguaSenas = 'Lengua de señas',
+  fuenteDislexiaHabilitada = false,
 }: BarraFlotanteProps) {
   const {
     alto_contraste,
     tamano_texto,
     reducir_animaciones,
+    fuente_dislexia,
     activarAltoContraste,
     desactivarAltoContraste,
     aumentarTexto,
     disminuirTexto,
     activarReducirAnimaciones,
     desactivarReducirAnimaciones,
+    alternarFuenteDislexia,
     resetearAccesibilidad,
   } = useAccesibilidadStore();
 
   const puedeAumentarTexto = tamano_texto !== 'muy_grande';
   const puedeDisminuirTexto = tamano_texto !== 'normal';
   const estaModificado =
-    alto_contraste || tamano_texto !== 'normal' || reducir_animaciones;
+    alto_contraste ||
+    tamano_texto !== 'normal' ||
+    reducir_animaciones ||
+    fuente_dislexia;
 
   // Sincroniza directamente con el DOM desde este componente,
   // sin depender de ProveedorAccesibilidad como intermediario.
@@ -131,6 +138,31 @@ export function BarraFlotante({
         </span>
       </button>
 
+      {/* Fuente para dislexia — solo si la API lo habilita */}
+      {fuenteDislexiaHabilitada && (
+        <button
+          type="button"
+          className="barra-flotante-btn"
+          onClick={alternarFuenteDislexia}
+          aria-pressed={fuente_dislexia}
+          aria-label={
+            fuente_dislexia
+              ? 'Desactivar fuente para dislexia'
+              : 'Activar fuente para dislexia'
+          }
+          title={
+            fuente_dislexia
+              ? 'Desactivar fuente para dislexia'
+              : 'Fuente para dislexia'
+          }
+        >
+          <span className="barra-flotante-texto">Fuente dislexia</span>
+          <span className="barra-flotante-icono" aria-hidden="true">
+            <IconoFuente />
+          </span>
+        </button>
+      )}
+
       {/* Restablecer */}
       <button
         type="button"
@@ -187,6 +219,15 @@ function IconoAnimacion() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <circle cx="12" cy="12" r="3" />
       <path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" />
+    </svg>
+  );
+}
+
+function IconoFuente() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 20V7a3 3 0 0 1 3-3h2M4 12h7" />
+      <path d="M14 20v-9a3 3 0 0 1 3-3h3M14 14h6" />
     </svg>
   );
 }

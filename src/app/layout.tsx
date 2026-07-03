@@ -44,6 +44,9 @@ export default async function RootLayout({
               lenguaSenasHabilitada={configuracion.accion_lengua_senas_habilitada}
               urlLenguaSenas={configuracion.url_lengua_senas}
               textoLenguaSenas={configuracion.texto_lengua_senas}
+              fuenteDislexiaHabilitada={
+                configuracion.accesibilidad?.fuente_dislexia_habilitada
+              }
             />
 
             <EncabezadoConTema />
