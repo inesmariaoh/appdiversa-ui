@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { RutaProtegida } from '@/components/auth/006_ruta_protegida';
+import { BotonIrEncuestas } from '@/components/ui/013_boton_ir_encuestas';
 import { TarjetaRespuesta } from '@/components/mis-respuestas/001_tarjeta_respuesta';
 import { obtenerHistorialSesiones } from '@/services/sesionesServicio';
 import type { HistorialSesion } from '@/types/sesion';
@@ -129,6 +130,7 @@ export function ContenidoHistorial() {
   return (
     <RutaProtegida rutaLogin="/auth/login?destino=/mis-respuestas">
       <ListaHistorial />
+      <BotonIrEncuestas />
     </RutaProtegida>
   );
 }

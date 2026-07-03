@@ -48,11 +48,12 @@ function BotonPrimario({ etiqueta, onClick }: { readonly etiqueta: string; reado
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg px-3 py-1.5 text-sm font-medium"
+      className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-medium"
       style={{
         backgroundColor: 'var(--color-primario)',
         color: 'var(--color-texto-invertido)',
         minHeight: 'var(--tamano-control-min)',
+        minWidth: '5.5rem',
       }}
     >
       {etiqueta}

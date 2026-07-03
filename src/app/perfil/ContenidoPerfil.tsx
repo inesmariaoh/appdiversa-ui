@@ -7,6 +7,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { RutaProtegida } from '@/components/auth/006_ruta_protegida';
+import { BotonIrEncuestas } from '@/components/ui/013_boton_ir_encuestas';
 import { CampoTexto } from '@/components/ui/008_campo_texto';
 import { CampoContrasena } from '@/components/ui/009_campo_contrasena';
 import { Boton } from '@/components/ui/001_boton';
@@ -398,6 +399,7 @@ export function ContenidoPerfil() {
         </p>
       )}
       {!cargando && perfil && <TarjetaPerfil perfil={perfil} />}
+      <BotonIrEncuestas />
     </RutaProtegida>
   );
 }

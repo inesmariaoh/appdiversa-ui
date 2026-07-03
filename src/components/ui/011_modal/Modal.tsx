@@ -7,6 +7,9 @@
 
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useInterfazStore } from '@/store/interfazStore';
+import { BotonEscuchar } from '@/components/accesibilidad/003_lector_voz';
+import { extraerTextoLegible } from '@/utils/extraerTextoDom';
 
 interface ModalProps {
   readonly abierto: boolean;
@@ -43,6 +46,9 @@ export function Modal({
   const centrado = alineacion === 'center';
   const idTitulo = useId();
   const idDescripcion = useId();
+  const lecturaVozHabilitada = useInterfazStore(
+    (estado) => estado.configuracion?.accesibilidad?.lectura_voz_habilitada ?? false,
+  );
 
   useFocusTrap(dialogRef, abierto);
 
@@ -97,6 +103,7 @@ export function Modal({
         {mostrarBotonCerrar && (
           <button
             type="button"
+            data-no-leer
             onClick={onCerrar}
             aria-label="Cerrar diálogo"
             className="absolute top-4 right-4 flex items-center justify-center rounded-lg transition-colors"
@@ -108,6 +115,17 @@ export function Modal({
           >
             <IconoCerrar />
           </button>
+        )}
+
+        {/* Boton escuchar contenido del modal */}
+        {lecturaVozHabilitada && (
+          <div className="shrink-0 mb-3 pr-10">
+            <BotonEscuchar
+              obtenerTexto={() =>
+                dialogRef.current ? extraerTextoLegible(dialogRef.current) : ''
+              }
+            />
+          </div>
         )}
 
         {/* Titulo (accesible via aria-labelledby) */}

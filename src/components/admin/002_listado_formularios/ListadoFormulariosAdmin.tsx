@@ -89,12 +89,12 @@ export function ListadoFormulariosAdmin() {
         <table className="w-full text-sm">
           <thead style={{ backgroundColor: 'var(--color-fondo-pagina)' }}>
             <tr>
-              <th className="p-3 text-left font-semibold">Codigo</th>
+              <th className="p-3 text-left font-semibold">Código</th>
               <th className="p-3 text-left font-semibold">Nombre</th>
               <th className="p-3 text-left font-semibold">Estado</th>
               <th className="p-3 text-left font-semibold">Tipo</th>
               <th className="p-3 text-left font-semibold">Vigencia</th>
-              <th className="p-3 text-left font-semibold">Version</th>
+              <th className="p-3 text-left font-semibold">Versión</th>
               <th className="p-3 text-left font-semibold">Acciones</th>
             </tr>
           </thead>

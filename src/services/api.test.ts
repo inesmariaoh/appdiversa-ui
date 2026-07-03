@@ -177,6 +177,46 @@ describe('apiCliente', () => {
     expect(useSesionStore.getState().uuidSesion).toBe('s1');
   });
 
+  it('alinea el host local de la API con el host de la pagina', async () => {
+    const ventanaOriginal = globalThis.window;
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'http://localhost:8000');
+    vi.stubGlobal('window', { location: { hostname: '127.0.0.1' } });
+
+    const config = {
+      headers: new AxiosHeaders(),
+    } as InternalAxiosRequestConfig;
+
+    const handlers = apiCliente.interceptors.request.handlers ?? [];
+    const handler = handlers[0]?.fulfilled;
+    assert.isDefined(handler);
+    const resultado = await handler(config);
+
+    expect(resultado?.baseURL).toBe('http://127.0.0.1:8000');
+
+    vi.unstubAllEnvs();
+    vi.stubGlobal('window', ventanaOriginal);
+  });
+
+  it('no altera el host de la API cuando es un dominio remoto', async () => {
+    const ventanaOriginal = globalThis.window;
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'https://api.produccion.example');
+    vi.stubGlobal('window', { location: { hostname: '127.0.0.1' } });
+
+    const config = {
+      headers: new AxiosHeaders(),
+    } as InternalAxiosRequestConfig;
+
+    const handlers = apiCliente.interceptors.request.handlers ?? [];
+    const handler = handlers[0]?.fulfilled;
+    assert.isDefined(handler);
+    const resultado = await handler(config);
+
+    expect(resultado?.baseURL).toBe('https://api.produccion.example');
+
+    vi.unstubAllEnvs();
+    vi.stubGlobal('window', ventanaOriginal);
+  });
+
   it('ajusta host en entorno servidor cuando existe API_BASE_URL', async () => {
     const ventanaOriginal = globalThis.window;
     vi.stubGlobal('window', undefined);

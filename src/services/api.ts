@@ -19,16 +19,38 @@ function requestIncluyoSesionAnonima(
   return Boolean(plano[HEADER_SESION_ANONIMA]);
 }
 
+const HOSTS_LOCALES = new Set(['localhost', '127.0.0.1']);
+
 function obtenerUrlPublicaApi(): string {
   return process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:8000';
 }
 
+// Alinea el host de la API con el host de la pagina cuando ambos son locales.
+// Evita que la cookie de sesion quede bloqueada por SameSite al mezclar
+// "localhost" y "127.0.0.1", que el navegador considera sitios distintos.
+function alinearHostLocalConPagina(baseUrlApi: string): string {
+  if (globalThis.window === undefined) {
+    return baseUrlApi;
+  }
+  const hostPagina = globalThis.window.location.hostname;
+  try {
+    const url = new URL(baseUrlApi);
+    if (HOSTS_LOCALES.has(url.hostname) && HOSTS_LOCALES.has(hostPagina)) {
+      url.hostname = hostPagina;
+      return url.origin;
+    }
+  } catch {
+    return baseUrlApi;
+  }
+  return baseUrlApi;
+}
+
 function obtenerBaseUrlApi(): string {
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return process.env.API_BASE_URL ?? obtenerUrlPublicaApi();
   }
 
-  return obtenerUrlPublicaApi();
+  return alinearHostLocalConPagina(obtenerUrlPublicaApi());
 }
 
 export const apiCliente = axios.create({
@@ -44,7 +66,7 @@ apiCliente.interceptors.request.use((config) => {
   config.baseURL = obtenerBaseUrlApi();
 
   // Django valida ALLOWED_HOSTS; desde Docker el host de conexion no coincide con localhost.
-  if (typeof window === 'undefined' && process.env.API_BASE_URL) {
+  if (globalThis.window === undefined && process.env.API_BASE_URL) {
     try {
       config.headers.set('Host', new URL(obtenerUrlPublicaApi()).host);
     } catch {
@@ -62,7 +84,7 @@ apiCliente.interceptors.response.use(
       const tieneSesionAnonima = requestIncluyoSesionAnonima(error.config?.headers);
       if (
         tieneSesionAnonima &&
-        typeof globalThis.window !== 'undefined' &&
+        globalThis.window !== undefined &&
         debeInvalidarSesionAnonima(error)
       ) {
         useSesionStore.getState().limpiar();
