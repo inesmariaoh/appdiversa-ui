@@ -7,9 +7,12 @@ import {
   obtenerPerfilEditable,
   actualizarPerfil,
   cambiarPassword,
+  eliminarCuenta,
   registrarCorreo,
   solicitarRestaurarPassword,
   restaurarPassword,
+  verificarCorreo,
+  reenviarVerificacion,
 } from './authServicio';
 
 vi.mock('./api', () => ({
@@ -183,5 +186,44 @@ describe('authServicio', () => {
     await expect(
       solicitarRestaurarPassword({ email: 'usuario@correo.com' })
     ).rejects.toThrow('fallo de red');
+  });
+
+  it('verifica correo con uid y token', async () => {
+    const detalle = { detalle: 'Tu correo fue verificado.' };
+    vi.mocked(apiCliente.post).mockResolvedValue({ data: detalle });
+
+    const resultado = await verificarCorreo('uid-1', 'token-1');
+
+    expect(apiCliente.post).toHaveBeenCalledWith('/api/v1/auth/verificar-correo/', {
+      uid: 'uid-1',
+      token: 'token-1',
+    });
+    expect(resultado).toEqual(detalle);
+  });
+
+  it('reenvia verificacion de correo', async () => {
+    const detalle = { detalle: 'Si el correo esta pendiente recibiras un enlace.' };
+    vi.mocked(apiCliente.post).mockResolvedValue({ data: detalle });
+
+    const resultado = await reenviarVerificacion('usuario@correo.com');
+
+    expect(apiCliente.post).toHaveBeenCalledWith('/api/v1/auth/reenviar-verificacion/', {
+      email: 'usuario@correo.com',
+    });
+    expect(resultado).toEqual(detalle);
+  });
+
+  it('elimina la cuenta propia con contrasena', async () => {
+    const detalle = { detalle: 'Tu cuenta fue eliminada correctamente.' };
+    vi.mocked(apiCliente.post).mockResolvedValue({ data: detalle });
+
+    const resultado = await eliminarCuenta('Secreta123');
+
+    expect(apiCliente.post).toHaveBeenCalledWith(
+      '/api/v1/auth/eliminar-cuenta/',
+      { password: 'Secreta123' },
+      { withCredentials: true }
+    );
+    expect(resultado).toEqual(detalle);
   });
 });

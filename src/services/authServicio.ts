@@ -22,6 +22,7 @@ const RUTA_REGISTRO_CORREO = '/api/v1/auth/registro/correo/';
 const RUTA_ME = '/api/v1/auth/me/';
 const RUTA_PERFIL = '/api/v1/auth/perfil/';
 const RUTA_CAMBIAR_PASSWORD = '/api/v1/auth/cambiar-password/';
+const RUTA_ELIMINAR_CUENTA = '/api/v1/auth/eliminar-cuenta/';
 const RUTA_SOLICITAR_RESTAURAR_PASSWORD = '/api/v1/auth/solicitar-restaurar-password/';
 const RUTA_RESTAURAR_PASSWORD = '/api/v1/auth/restaurar-password/';
 const RUTA_VERIFICAR_CORREO = '/api/v1/auth/verificar-correo/';
@@ -83,6 +84,15 @@ export async function cambiarPassword(entrada: CambiarPasswordEntrada): Promise<
     },
     CONFIG_SESION,
   );
+}
+
+export async function eliminarCuenta(password: string): Promise<RespuestaDetalle> {
+  const respuesta = await apiCliente.post<RespuestaDetalle>(
+    RUTA_ELIMINAR_CUENTA,
+    { password },
+    CONFIG_SESION
+  );
+  return respuesta.data;
 }
 
 export async function solicitarRestaurarPassword(

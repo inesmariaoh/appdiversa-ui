@@ -14,6 +14,7 @@ import { Modal } from '@/components/ui/011_modal';
 import {
   actualizarPerfil,
   cambiarPassword,
+  eliminarCuenta,
   obtenerPerfilEditable,
 } from '@/services/authServicio';
 import { useAuthStore } from '@/store/authStore';
@@ -66,6 +67,7 @@ function IconoPapelera() {
 function TarjetaPerfil({ perfil }: { readonly perfil: PerfilEditable }) {
   const router = useRouter();
   const cargarPerfilAuth = useAuthStore((s) => s.cargarPerfil);
+  const cerrarSesionAuth = useAuthStore((s) => s.cerrarSesion);
   const [nombres, setNombres] = useState(perfil.first_name);
   const [apellidos, setApellidos] = useState(perfil.last_name);
   const [mostrarCambioPassword, setMostrarCambioPassword] = useState(false);
@@ -73,6 +75,9 @@ function TarjetaPerfil({ perfil }: { readonly perfil: PerfilEditable }) {
   const [passwordActual, setPasswordActual] = useState('');
   const [passwordNueva, setPasswordNueva] = useState('');
   const [passwordConfirmacion, setPasswordConfirmacion] = useState('');
+  const [passwordEliminar, setPasswordEliminar] = useState('');
+  const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
+  const [eliminando, setEliminando] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
@@ -82,6 +87,26 @@ function TarjetaPerfil({ perfil }: { readonly perfil: PerfilEditable }) {
     setNombres(perfil.first_name);
     setApellidos(perfil.last_name);
   }, [perfil.first_name, perfil.last_name]);
+
+  function cerrarModalEliminar() {
+    setModalEliminarAbierto(false);
+    setPasswordEliminar('');
+    setErrorEliminar(null);
+  }
+
+  async function confirmarEliminarCuenta() {
+    setErrorEliminar(null);
+    setEliminando(true);
+    try {
+      await eliminarCuenta(passwordEliminar);
+      await cerrarSesionAuth();
+      router.replace('/auth/login');
+    } catch (err) {
+      setErrorEliminar(extraerDetalleError(err));
+    } finally {
+      setEliminando(false);
+    }
+  }
 
   async function guardarCambiosPerfil() {
     setError(null);
@@ -283,26 +308,51 @@ function TarjetaPerfil({ perfil }: { readonly perfil: PerfilEditable }) {
 
       <Modal
         abierto={modalEliminarAbierto}
-        onCerrar={() => setModalEliminarAbierto(false)}
+        onCerrar={cerrarModalEliminar}
         titulo="Eliminar cuenta"
-        descripcion="La eliminación de la cuenta debe gestionarse con el equipo de soporte."
+        descripcion="Esta acción desactivará tu cuenta y cerrará tu sesión."
         tamano="sm"
       >
-        <p className="text-sm mb-6" style={{ color: 'var(--color-texto-secundario)' }}>
-          Por el momento no es posible eliminar la cuenta desde la aplicación. Si deseas solicitar
-          la eliminación de tus datos, comunícate con nosotros.
+        <p className="text-sm mb-4" style={{ color: 'var(--color-texto-secundario)' }}>
+          Para confirmar la eliminación de tu cuenta, ingresa tu contraseña actual. No
+          podrás volver a iniciar sesión con esta cuenta.
         </p>
+        <div className="mb-4">
+          <CampoContrasena
+            id="password-eliminar"
+            etiqueta="Contraseña actual"
+            value={passwordEliminar}
+            onChange={(evento) => setPasswordEliminar(evento.target.value)}
+            autoComplete="current-password"
+            placeholder="Escriba su contraseña"
+          />
+        </div>
+        {errorEliminar && (
+          <p role="alert" className="text-sm mb-4" style={{ color: 'var(--color-error)' }}>
+            {errorEliminar}
+          </p>
+        )}
         <div className="flex flex-col sm:flex-row gap-3">
-          <Boton type="button" variante="secundario" ancho="completo" onClick={() => setModalEliminarAbierto(false)}>
+          <Boton
+            type="button"
+            variante="secundario"
+            ancho="completo"
+            onClick={cerrarModalEliminar}
+          >
             Cancelar
           </Boton>
           <Boton
             type="button"
             variante="primario"
             ancho="completo"
-            onClick={() => router.push('/contacto')}
+            cargando={eliminando}
+            disabled={eliminando || passwordEliminar.length === 0}
+            onClick={() => ejecutarSinEspera(confirmarEliminarCuenta())}
+            style={{
+              backgroundColor: 'var(--color-error)',
+            }}
           >
-            Ir a contacto
+            Eliminar cuenta
           </Boton>
         </div>
       </Modal>
