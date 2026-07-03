@@ -66,6 +66,115 @@ html[data-alto-contraste='true'] *:focus-visible {
   scroll-behavior: auto !important;
 }
 
+/* --- Fuente para dislexia -------------------------------- */
+/*
+ * Aplica una familia tipografica mas legible para personas con dislexia y
+ * aumenta el espaciado entre letras, palabras y lineas. Si se dispone de la
+ * fuente libre OpenDyslexic instalada o servida via @font-face, se usa
+ * primero; de lo contrario se recurre a alternativas ampliamente disponibles.
+ */
+html[data-fuente-dislexia='true'] body,
+html[data-fuente-dislexia='true'] button,
+html[data-fuente-dislexia='true'] input,
+html[data-fuente-dislexia='true'] select,
+html[data-fuente-dislexia='true'] textarea {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Trebuchet MS', Verdana, sans-serif;
+  letter-spacing: 0.03em;
+  word-spacing: 0.12em;
+  line-height: 1.7;
+}
+
+/* --- Boton de lectura por voz (texto a voz) -------------- */
+.boton-escuchar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-xs, 4px);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  background-color: transparent;
+  border: 1px solid var(--color-primario);
+  border-radius: var(--radio-borde, 6px);
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+}
+
+.boton-escuchar:hover,
+.boton-escuchar:focus-visible {
+  color: var(--color-texto-invertido, #ffffff);
+  background-color: var(--color-primario);
+}
+
+.boton-escuchar[aria-pressed='true'] {
+  color: var(--color-texto-invertido, #ffffff);
+  background-color: var(--color-acento, var(--color-primario));
+}
+
+.boton-escuchar-icono {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- Panel de lengua de senas ---------------------------- */
+.panel-lengua-senas {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: var(--espacio-md, 16px);
+  border: none;
+  background-color: rgb(0 0 0 / 0.6);
+}
+
+.panel-lengua-senas-contenido {
+  width: 100%;
+  max-width: 640px;
+  background-color: var(--color-fondo-tarjeta, #ffffff);
+  border-radius: var(--radio-borde, 8px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+  overflow: hidden;
+}
+
+.panel-lengua-senas-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espacio-sm, 8px) var(--espacio-md, 16px);
+  background-color: var(--color-primario);
+  color: var(--color-texto-invertido, #ffffff);
+}
+
+.panel-lengua-senas-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.panel-lengua-senas-cerrar {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--espacio-xs, 4px);
+}
+
+.panel-lengua-senas-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: #000000;
+}
+
 /* --- Skip link (saltar al contenido principal) ----------- */
 .saltar-al-contenido {
   position: absolute;
